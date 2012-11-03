@@ -1,0 +1,12 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_source_frame_main"
+    android:layout_width="65dp"
+    android:layout_height="78dp"    
+    android:layout_alignTop="@+id/gridForCardsOnTable" >
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center" />
+
+</FrameLayout>

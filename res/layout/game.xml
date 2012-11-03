@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.main.drag.DragLayer xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.android.launcher"
+    android:id="@+id/drag_layer"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/grid_background" >
+
+    <RelativeLayout
+        android:id="@+id/relativeMainMap"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/image_framelayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/gridForCardsOnTable"
+            android:layout_alignParentTop="true" >
+
+            <com.main.helper.NoZoomControllWebView
+                android:id="@+id/mainMap"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:adjustViewBounds="true" />
+
+            <ImageView
+                android:id="@+id/settingsImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="left|bottom"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="1dp"
+                android:background="#00000000"
+                android:contentDescription="lol"
+                android:onClick="showSettings"
+                android:src="@drawable/ic_menu_settings" />
+
+            <TextView
+                android:id="@+id/lastAction"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="#80000000"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFFFFF" />
+
+            <FrameLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/image_source_frame_main"
+                android:layout_width="65dp"
+                android:layout_height="74dp"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="70dp"
+                android:background="#00000000" >
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/buttonNextCard"
+                android:layout_width="55dp"
+                android:layout_height="74dp"
+                android:layout_gravity="bottom|right"
+                android:background="@drawable/cards_deck"
+                android:onClick="newCard"
+                android:textSize="12dp" />
+        </FrameLayout>
+
+        <GridView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/gridForCardsOnTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/separator"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="3dp"
+            android:layout_toLeftOf="@+id/linearLayoutForDynamicAdding"
+            android:background="@color/grid_openCards_background"
+            android:horizontalSpacing="3dp"
+            android:numColumns="0"
+            android:stretchMode="columnWidth"
+            android:visibility="gone" >
+        </GridView>
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/linearLayoutForDynamicAdding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/separator"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/gridForCardsOnTable" >
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/separator"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_above="@+id/image_grid_view"
+            android:layout_centerHorizontal="true"
+            android:background="#ffffff" />
+
+        <GridView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/image_grid_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="@color/grid_background"
+            android:numColumns="@integer/num_columns"
+            android:stretchMode="columnWidth" >
+        </GridView>
+    </RelativeLayout>
+
+</com.main.drag.DragLayer>

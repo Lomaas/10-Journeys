@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/testeurope"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar" >
+    </com.markupartist.android.widget.ActionBar>
+
+   <Button
+       android:id="@+id/startNewGameButton"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:text="New game"
+       android:background="@drawable/bluee_button"
+       android:onClick="startNewGame"
+       style="@style/ButtonText" />    
+    
+    <ListView
+        android:id="@android:id/list"
+        android:layout_below="@+id/actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+
+</LinearLayout>

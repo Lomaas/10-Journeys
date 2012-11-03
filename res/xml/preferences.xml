@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Account" >
+        <EditTextPreference
+            android:name="EditText Preference"
+            android:defaultValue="null"
+            android:key="email"
+            android:summary="This allows you to enter a string"
+            android:title="Edit email" />
+        <EditTextPreference
+            android:name="EditText Preference"
+            android:defaultValue="null"
+            android:key="username"
+            android:summary="This allows you to enter a string"
+            android:title="Edit username" />
+        <EditTextPreference
+            android:name="EditText Preference"
+            android:key="pw"
+            android:summary="This allows you to enter a string"
+            android:title="Edit password" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="setFacebookLogin"
+            android:summary="Connect your account with Facebook to get more out of the app"
+            android:title="Facebook" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Notifications" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="notifications"
+            android:title="Enable notifictaions" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Other" >
+        <Preference
+            android:key="loginInfo"
+            android:summary="See the introduction carusell"
+            android:title="How to play" >
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

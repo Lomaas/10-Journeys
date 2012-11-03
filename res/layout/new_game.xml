@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout4"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+  	android:background="@drawable/testeurope"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="Choose continent:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_marginTop="10dp"
+        android:minHeight="40dp"  
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:entries="@array/country_arrays"
+        android:prompt="@string/country_prompt" />
+	
+    <Button
+        style="@style/ButtonText"
+        android:background="@drawable/bluee_button"    
+        android:id="@+id/buttonFindFriend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="findOpponentByFriendList"
+        android:text="Invite friend" />
+
+    <Button
+        style="@style/ButtonText"
+        android:background="@drawable/bluee_button"    
+        android:id="@+id/buttonFindByUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="findOpponentByEmailUsername"
+        android:text="Find by username/email" />
+
+    <Button
+        style="@style/ButtonText" 
+        android:background="@drawable/bluee_button"    
+        android:id="@+id/buttonFindRandom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="findOpponentRandom"
+        android:text="Find random opponent" />
+
+</LinearLayout>

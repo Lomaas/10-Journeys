@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="CustomTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:listViewStyle">@style/CustomListView</item>
+        <item name="android:textViewStyle">@style/CustomTextView</item>
+    </style>
+    <style name="CustomListView" parent="@android:style/Widget.ListView">
+        <item name="android:fastScrollEnabled">true</item>
+    </style>
+    <style name="CustomTextView" parent="@android:style/Widget.TextView">
+        <item name="android:typeface">serif</item>
+    </style>
+    <style name="CustomDialogView" parent="@android:style/Theme.Dialog">
+        <item name="android:textColor">#00FF00</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+    <style name="ButtonText">
+	    <item name="android:layout_width">fill_parent</item>
+	    <item name="android:layout_height">wrap_content</item>
+	    <item name="android:textColor">#ffffff</item>
+	    <item name="android:gravity">center</item>
+	    <item name="android:layout_margin">3dp</item>
+	    <item name="android:textSize">15dp</item>
+	    <item name="android:textStyle">bold</item>
+	    <item name="android:shadowColor">#000000</item>
+	    <item name="android:shadowDx">1</item>
+	    <item name="android:shadowDy">1</item>
+	    <item name="android:shadowRadius">2</item>
+	</style>
+</resources>

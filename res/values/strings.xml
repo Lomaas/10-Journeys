@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">10 Journeys</string>
+    <string name="register">Register</string>
+    <string name="signin">Sign in</string>
+  	<string name="sendAppRequest">Join me on my journey</string>     
+    <string name="action_waiting">The other player is finishing start up</string>
+    <string name="login">To login</string>
+ 	<string name="instructions">Add an image. Then press on image to drag it. Drop it on the grid.</string> 
+ 	<string name="ticker_new_friend">You have a new friend request</string>  
+ 	<string name="ticker_new_friend_title">Friend request</string>  
+  	<string name="ticker_new_friend_text">You got a new friend request.</string>  
+  	<string name="sendAddFriendUrl">http://restfulserver.herokuapp.com/user/add_friend</string>
+ 	<string name="sendFriendRequestUrl">http://restfulserver.herokuapp.com/user/friend_request</string>
+    <string name="APP_ID">271971842906436</string>
+ 	
+ 	
+    <color name="white">#FFFFFF</color>
+    <color name="darkgray">#323331</color>
+    <color name="black">#000000</color>
+    <string name="country_prompt">Choose a map</string>
+    <string-array name="options_game">
+        <item>Reset view</item>
+        <item>Add opponent to friendslist</item>
+        <item>Start new game w/opponent</item>
+        <item>Give up</item>
+    </string-array>
+    <string-array name="country_arrays">
+        <item>Europe</item>
+    </string-array>
+    <integer name="num_images">10</integer>
+    <integer name="num_columns">5</integer>
+
+</resources>

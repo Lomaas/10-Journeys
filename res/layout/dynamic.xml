@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayoutForDynamicAdding"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/separator"
+    android:layout_alignParentRight="true"
+    android:orientation="horizontal" >
+
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/buttonNextCard"
+    android:layout_width="55dp"
+    android:layout_height="74dp"
+    android:layout_above="@+id/separator"
+    android:layout_alignTop="@+id/gridForCardsOnTable"
+    android:layout_toLeftOf="@+id/image_source_frame_main"
+    android:background="@drawable/cards_deck"
+    android:onClick="newCard"
+    android:textSize="12dp" />
+
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/image_source_frame_main"
+        android:layout_width="65dp"
+        android:layout_height="74dp"
+        android:layout_gravity="bottom|right"
+        android:background="#00000000" >
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+</LinearLayout>
