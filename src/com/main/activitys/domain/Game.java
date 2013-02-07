@@ -23,10 +23,40 @@ public class Game {
 	private int playersTurn;
 	private JSONArray yourCards;
 	private JSONArray openCards;
+	private JSONArray openCardParents;
+
 	private int opponentId;
 	private int type;
 	private int finished = 0;
+	private String dateCreated;
+	private int imageId = 0;
+	private int score = 0;
 	
+	
+	public int getImageId() {
+		return imageId;
+	}
+
+	public void setImageId(int image) {
+		this.imageId = image;
+	}
+
+	public String getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(String dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int type) {
+		this.score = type;
+	}
+
 	public int getType() {
 		return type;
 	}
@@ -37,6 +67,15 @@ public class Game {
 	public int getPlayersTurn() {
 		return playersTurn;
 	}
+	
+	public JSONArray getOpenCardParents() {
+		return openCardParents;
+	}
+
+	public void setOpenCardParents(JSONArray openCardParents) {
+		this.openCardParents = openCardParents;
+	}
+
 
 	public void setPlayersTurn(int playersTurn) {
 		this.playersTurn = playersTurn;

@@ -62,10 +62,9 @@ public class AsynchronousSender extends Thread {
 				request.setHeader("Cookie", sessionId);
 			}
 			
-			final HttpResponse response;
-			synchronized (httpClient) {
-				response = getClient().execute((HttpUriRequest) request, localContext);
-			}
+			HttpResponse response = null;
+			response = getClient().execute((HttpUriRequest) request, localContext);
+
 			String message = readResponse(response);
 	    
 			if(message.equals("Session expired")){

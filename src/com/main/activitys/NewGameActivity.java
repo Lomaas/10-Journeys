@@ -22,9 +22,11 @@ import com.markupartist.android.widget.ActionBar.Action;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -44,6 +46,10 @@ public class NewGameActivity extends Activity {
 	public static String usernameUrl = "http://restfulserver.herokuapp.com/game/new_username";
 	public static String emailUrl = "http://restfulserver.herokuapp.com/game/new_email";
 
+	Context ctx = this;
+	IntentFilter gcmFilter;
+	private BroadcastReceiver gcmReceiver = null;
+
 	private String username;
 	private String email;
 
@@ -60,7 +66,11 @@ public class NewGameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.new_game);
-
+		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
+		gcmReceiver = CommonFunctions.createBroadCastReceiver(ctx, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);
+		gcmFilter = new IntentFilter();
+		gcmFilter.addAction("GCM_RECEIVED_ACTION");
+		
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle("New game");
 		actionBar.setHomeAction(new Action() {
@@ -76,7 +86,6 @@ public class NewGameActivity extends Activity {
 			}
 		});
 
-		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 
 		responseListener = new ResponseListener() {
 			@Override
@@ -98,6 +107,7 @@ public class NewGameActivity extends Activity {
 
 	protected void onResume(){
 		super.onResume();
+		registerReceiver(gcmReceiver, gcmFilter);
 
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		if(Login.isSessionExpired(loginSettings)){
@@ -105,6 +115,11 @@ public class NewGameActivity extends Activity {
 			startActivity(loginIntent);
 			finish();
 		}
+	}
+	
+	protected void onPause(){
+		super.onPause();
+		unregisterReceiver(gcmReceiver);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -153,18 +168,20 @@ public class NewGameActivity extends Activity {
 
 				if(response.has("error"))
 					new Alert("Uups", response.getString("error"), this);
-
-				else{
-					returnIntent.putExtra("gameInfo", response.toString());
-					Log.d("gameinfo", response.toString());
-					resultCode = Activity.RESULT_OK;
+				else if(response.has("gameRequestSent")) {
+					alert("Game request sent", "A game request has been sent to " + response.getString("opponent"), this);
 				}
-				if (getParent() == null) {
-					setResult(resultCode, returnIntent);
-				} else {
-					getParent().setResult(resultCode, returnIntent);
-				}
-				finish();
+//				else{
+//					returnIntent.putExtra("gameInfo", response.toString());
+//					Log.d("gameinfo", response.toString());
+//					resultCode = Activity.RESULT_OK;
+//				}
+//				if (getParent() == null) {
+//					setResult(resultCode, returnIntent);
+//				} else {
+//					getParent().setResult(resultCode, returnIntent);
+//				}
+//				finish();
 			}
 		}
 
@@ -172,13 +189,13 @@ public class NewGameActivity extends Activity {
 	}
 
 	public void findOpponentByFriendList(View v){
-		Intent intent = new Intent().setClass(this, InviteFriendTabActivity.class);
+		Intent intent = new Intent().setClass(this, GetAddedFriendsActivity.class);
 		intent.putExtra("type", 1);
 		startActivityForResult(intent, AllGamesActivity.RANDOM_GAMEREQ_RESP);
 	}
 
 	public void findOpponentByEmailUsername(View v){
-		specialAlert("Create game", "Enter your opponents email/username address", this, new EditText(this));
+		specialAlert("Create game", "Enter your opponents email/username", this, new EditText(this));
 	}	
 
 	public void findOpponentRandom(View v){
@@ -195,7 +212,7 @@ public class NewGameActivity extends Activity {
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, randomResponseListener, loginSettings);
 
-		alert("Finding opponent", "Searching for an opponent to play against. This can take a while...", this);
+		alert("Finding opponent", "Searching for an opponent to play against. This can take some minutes...", this);
 	}
 
 	private void sendEmail(String eMail){
@@ -251,8 +268,9 @@ public class NewGameActivity extends Activity {
 
 				progDialog = new 
 						ProgressDialogClass(NewGameActivity.this, 
-								"Finding user", 
-								"Looking up user, please wait a moment...");
+								"Sending game request", 
+								"Looking up user and sending game request, please wait a moment...",
+								15000);
 
 				progDialog.run();
 			}

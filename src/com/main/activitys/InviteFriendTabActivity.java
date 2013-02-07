@@ -37,13 +37,13 @@ public class InviteFriendTabActivity extends TabActivity {
         Intent contactIntent = new Intent(this, GetContactActivity.class);
         contact.setContent(contactIntent);
  
-        TabSpec recent = tabHost.newTabSpec("Facebook friends");
-        recent.setIndicator("Facebook friends", getResources().getDrawable(R.drawable.recent));
-        Intent recentIntent = new Intent(this, GetRecentPlayersActivity.class);
-        recent.setContent(recentIntent);
+//        TabSpec recent = tabHost.newTabSpec("Facebook friends");
+//        recent.setIndicator("Facebook friends", getResources().getDrawable(R.drawable.recent));
+//        Intent recentIntent = new Intent(this, GetRecentPlayersActivity.class);
+//        recent.setContent(recentIntent);
  
         tabHost.addTab(friends);
         tabHost.addTab(contact);
-        tabHost.addTab(recent);
+//        tabHost.addTab(recent);
     }
 }

@@ -15,26 +15,6 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/white" />
 
-    <Button
-        android:id="@+id/buttonLoginWithFaceBook"
-        style="@style/ButtonText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bluee_button"
-        android:onClick="launchFacebookLogin"
-        android:text="Login with Facebook" />
-
-    <TextView
-        android:id="@+id/regEmailView"
-        style="@style/ButtonText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:text="OR"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/white" />
-
     <TextView
         android:id="@+id/regEmailView"
         style="@style/ButtonText"

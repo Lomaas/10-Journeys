@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="/Users/Simen/Projects/travelgame/GoogleAdMobAdsSdkAndroid-6.1.0/GoogleAdMobAdsSdk-6.1.0.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/android-actionbar-library"/>
 	<classpathentry exported="true" kind="lib" path="/Applications/android-sdk-macosx/extras/google/gcm/gcm-client/dist/gcm.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

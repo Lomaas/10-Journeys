@@ -2,7 +2,7 @@
     android:id="@+id/linearLayout4"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-  	android:background="@drawable/testeurope"
+    android:background="@drawable/testeurope"
     android:gravity="top"
     android:orientation="vertical" >
 
@@ -10,48 +10,184 @@
         android:id="@+id/actionbar"
         style="@style/ActionBar" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="Choose continent:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_marginTop="10dp"
-        android:minHeight="40dp"  
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:entries="@array/country_arrays"
-        android:prompt="@string/country_prompt" />
-	
-    <Button
-        style="@style/ButtonText"
-        android:background="@drawable/bluee_button"    
-        android:id="@+id/buttonFindFriend"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
         android:onClick="findOpponentByFriendList"
-        android:text="Invite friend" />
+        android:orientation="horizontal"
+        android:padding="5dip" >
 
-    <Button
-        style="@style/ButtonText"
-        android:background="@drawable/bluee_button"    
-        android:id="@+id/buttonFindByUsername"
-        android:layout_width="match_parent"
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/image_framelayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" >
+
+            <LinearLayout
+                android:id="@+id/thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="5dip"
+                android:padding="3dip" >
+
+                <ImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="50dip"
+                    android:layout_height="50dip"
+                    android:layout_marginRight="3dip"
+                    android:src="@drawable/contact_badge" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/image_framelayout"
+            android:layout_toRightOf="@+id/image_framelayout"
+            android:shadowColor="@color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:text="Friend"
+            android:textColor="@color/white"
+            android:textSize="18dip" />
+
+        <TextView
+            android:id="@+id/gameRowLastAction"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textHeader"
+            android:layout_below="@+id/textHeader"
+            android:layout_marginTop="3dp"
+            android:text="Invite a 10 journey friend"
+            android:textColor="@color/white"
+            android:textSize="13dip" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
         android:onClick="findOpponentByEmailUsername"
-        android:text="Find by username/email" />
+        android:orientation="horizontal"
+        android:padding="5dip" >
 
-    <Button
-        style="@style/ButtonText" 
-        android:background="@drawable/bluee_button"    
-        android:id="@+id/buttonFindRandom"
-        android:layout_width="match_parent"
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/image_framelayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" >
+
+            <LinearLayout
+                android:id="@+id/thumbnail2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="5dip"
+                android:padding="3dip" >
+
+                <ImageView
+                    android:id="@+id/avatar2"
+                    android:layout_width="50dip"
+                    android:layout_height="50dip"
+                    android:layout_marginRight="3dip"
+                    android:src="@drawable/search" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textHeader2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/image_framelayout2"
+            android:layout_toRightOf="@+id/image_framelayout2"
+            android:shadowColor="@color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:text="Username/email"
+            android:textColor="@color/white"
+            android:textSize="18dip" />
+
+        <TextView
+            android:id="@+id/gameRowLastAction2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textHeader2"
+            android:layout_below="@+id/textHeader2"
+            android:layout_marginTop="3dp"
+            android:text="Find a user by username or email"
+            android:textColor="@color/white"
+            android:textSize="13dip" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
         android:onClick="findOpponentRandom"
-        android:text="Find random opponent" />
+        android:orientation="horizontal"
+        android:padding="5dip" >
+
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/image_framelayout3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" >
+
+            <LinearLayout
+                android:id="@+id/thumbnail3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="5dip"
+                android:padding="3dip" >
+
+                <ImageView
+                    android:id="@+id/avatar3"
+                    android:layout_width="50dip"
+                    android:layout_height="50dip"
+                    android:layout_marginRight="3dip"
+                    android:src="@drawable/icons_question_mark" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textHeader3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/image_framelayout3"
+            android:layout_toRightOf="@+id/image_framelayout3"
+            android:shadowColor="@color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:text="Random opponent"
+            android:textColor="@color/white"
+            android:textSize="18dip" />
+
+        <TextView
+            android:id="@+id/gameRowLastAction3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textHeader3"
+            android:layout_below="@+id/textHeader3"
+            android:layout_marginTop="3dp"
+            android:text="Links you up with an random opponent"
+            android:textColor="@color/white"
+            android:textSize="13dip" />
+    </RelativeLayout>
 
 </LinearLayout>

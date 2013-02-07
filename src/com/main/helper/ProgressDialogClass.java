@@ -14,14 +14,16 @@ public class ProgressDialogClass implements Runnable {
 	private String title;
 	private String message;
 	private boolean dismissed = false;
+	private int timeout = 15000;
 
 	/**
 	 * Constructor
 	 */
-	public ProgressDialogClass(Context c, String title, String message){
+	public ProgressDialogClass(Context c, String title, String message, int timeout){
 		this.callingActivity = c;
 		this.title = title;
 		this.message = message;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class ProgressDialogClass implements Runnable {
 				Looper.prepare();
 
 				try {
-					Thread.sleep(15000);
+					Thread.sleep(timeout);
 				}
 				catch (InterruptedException e) { e.printStackTrace(); }
 

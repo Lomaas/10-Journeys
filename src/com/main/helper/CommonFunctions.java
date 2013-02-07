@@ -3,54 +3,98 @@
  */
 package com.main.helper;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uit.nfc.AsynchronousHttpClient;
 import uit.nfc.ResponseListener;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Editable;
+import android.text.format.Time;
 import android.util.Log;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-import com.facebook.android.Facebook.DialogListener;
+import com.google.android.gcm.GCMRegistrar;
 import com.main.R;
 import com.main.activitys.AllGamesActivity;
+import com.main.activitys.ChatActivity;
+import com.main.activitys.GameActivity;
+import com.main.activitys.GameFinishActivity;
 import com.main.activitys.GetAddedFriendsActivity;
 import com.main.activitys.NewGameActivity;
+import com.main.activitys.domain.Extrainfo;
 import com.main.activitys.domain.Login;
+import com.main.activitys.domain.Message;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 /**
  * @author Simen
  *
  */
 public class CommonFunctions {
+	public static String START_GAME_URL = "http://restfulserver.herokuapp.com/game/respond_to_game_request";
+	public static int FROM_STANDARD_ACTIVITY = 1;
+	public static int FROM_CHAT_ACTIVITY = 2;
+	public static int FROM_GAME_ACTIVITY = 3;
+	public static int FROM_FINISH_GAME_ACTIVITY = 4;
+	public static int FROM_ALL_GAMESACTIVITY = 5;
+
+
 	public static int safeLongToInt(long l) {
 		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException
 			(l + " cannot be cast to int without changing its value.");
 		}
 		return (int) l;
+	}
+
+	public static float round(float unrounded, int precision, int roundingMode){
+		BigDecimal bd = new BigDecimal(unrounded);
+		BigDecimal rounded = bd.setScale(precision, roundingMode);
+		return rounded.floatValue();
+	}
+
+	public static String getMapFromType(int type){
+		switch(type){
+		case 1:
+			return "Europe"; 
+		case 2:
+			return "America";
+		default:
+			return "Europe";
+		}
+	}
+
+	public static int getMapFromString(String type){
+		if(type.equals("Europe"))
+			return 1;
+		else if(type.equals("America"))
+			return 2;
+
+		return 0;	// if something weird happends!
+	}
+
+
+	public static void returnImageDrawableFromId(int imageId){
+
 	}
 
 	public static void giveUp(int gameId, ResponseListener addFriendListener, SharedPreferences loginSettings){
@@ -67,7 +111,6 @@ public class CommonFunctions {
 	}
 
 	public static void evaluateResponseGiveUp(Context context, String message){
-
 		Log.i("evaluateResponse", message);
 
 		try {
@@ -85,8 +128,29 @@ public class CommonFunctions {
 			new Alert("Uups", "Ups, something fishy happpend", context);
 		}
 	}
-	
-	public static void startGameFromUsername(String username,  int type, ResponseListener responseListener, SharedPreferences loginSettings){
+
+	public static void startGameFromUsername(final Context ctx, String username,  int type, ResponseListener responseListener, SharedPreferences loginSettings){
+		if(responseListener == null){
+			responseListener = new ResponseListener() {
+
+				@Override
+				public void onResponseReceived(HttpResponse response, String message) {
+					try {
+						JSONObject input = new JSONObject(message);
+
+						if(input.getBoolean("gameRequestSent")){
+							new Alert("Request sent", "Game request sent", ctx);
+						}
+					}
+					catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			};
+		}
+
 		JSONObject postBody = new JSONObject();
 
 		try {
@@ -96,46 +160,61 @@ public class CommonFunctions {
 		}
 
 		catch (JSONException e) { e.printStackTrace(); }
-		
+
 		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, NewGameActivity.usernameUrl);
 
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, responseListener, loginSettings);
 	}
-	
-	public static void insertRecentPlayers(Context context, int fid, String username){
-		DbAdapter mDbHelper = new DbAdapter(context);
-		mDbHelper.open();
-		mDbHelper.insertNewPlayerImageRecent(fid, username);
-		mDbHelper.close();
-	}
-	
-	public static void insertRecentPlayer(Context context, String username){
-		SharedPreferences prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
-		String recent = prefs.getString("recent", "null");
-		
-		Log.d("insertRecentPlayer", recent);
-		
+
+	public static void postAnswerToGameRequest(final Context ctx, final int opponentId, int type, final SharedPreferences loginSettings, boolean accept){
+
+		ResponseListener responseListener = new ResponseListener() {
+			@Override
+			public void onResponseReceived(HttpResponse response, String message) {
+				// Fack you
+				DbAdapter adapter = new DbAdapter(ctx);
+				adapter.open();
+				adapter.deleteGameRequest(opponentId);
+				adapter.close();
+			}
+		};
+
+		JSONObject postBody = new JSONObject();
+
 		try {
-			ArrayList<String> listRecent = new ArrayList<String>();
-			JSONArray jarray = new JSONArray(recent);
-			
-  		for(int i=0; i < jarray.length(); i++){
-  			String nameInList = jarray.getString(i);
-  			
-  			if(nameInList.equals(username)){
-  				listRecent.add(0, username);
-  			}
-  			else {
-  				listRecent.add(nameInList);
-  			}
-  		}
-  		Editor e = prefs.edit();
-  		e.putString("recent", new JSONArray(listRecent).toString());
-  		e.commit();
+			//			postBody.put("userId", Login.getUserId(loginSettings));
+			Log.i("response TO game request", Integer.toString(opponentId));
+			postBody.put("opponentId", opponentId);
+			postBody.put("type", type);
+			postBody.put("accept", accept);
 		}
-		catch(JSONException e){ e.printStackTrace(); }
+
+		catch (JSONException e) { e.printStackTrace(); }
+
+		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, START_GAME_URL);
+
+		AsynchronousHttpClient a = new AsynchronousHttpClient();
+		a.sendRequest(httpPost, responseListener, loginSettings);
 	}
+
+
+	public static void findNewGameRequests(Context ctx, SharedPreferences loginPreferences){
+		DbAdapter adapter = new DbAdapter(ctx);
+		adapter.open();
+		Cursor cursor = adapter.fetchAllGameRequests();
+
+		for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
+			// use cursor to work with current item
+			Log.i("type", cursor.getString(1));
+			Log.i("username", cursor.getString(2));
+			String message =  cursor.getString(2) + " has sent you an game invite. Confirm? (" + cursor.getString(1) + ")";
+			specialAlertForGameRequest("Game request", message, cursor.getInt(0), CommonFunctions.getMapFromString(cursor.getString(1)), ctx, loginPreferences);
+			//adapter.deleteGameRequest(cursor.getInt(0));
+		}
+		adapter.close();
+	}
+
 
 	public static void evaluateAddFriend(String message, Context context){
 		Log.i("evaluateResponse", message);
@@ -144,9 +223,6 @@ public class CommonFunctions {
 
 			if(response.has("error"))
 				new Alert("Uups", response.getString("error"), context);
-			else if(response.has("sendingRequest")){
-				Toast.makeText(context, "Friend request sent", Toast.LENGTH_LONG).show();
-			}
 			else
 				Toast.makeText(context, "Added " + response.getString("username") +  " to your friendslist", Toast.LENGTH_LONG).show(); 
 		}
@@ -155,7 +231,7 @@ public class CommonFunctions {
 			new Alert("Uups", "Ups, something fishy happpend", context);
 		}
 	}
-	
+
 	public static void sendFriendRequest(String key, String friend, SharedPreferences loginSettings, final Context context){
 		ResponseListener addFriendListener= new ResponseListener() {
 			@Override
@@ -167,18 +243,18 @@ public class CommonFunctions {
 
 		JSONObject postBody = new JSONObject();
 		Log.i("friend", friend);
-		
+
 		try {
 			postBody.put(key, friend);
 		}
 		catch (JSONException e) { e.printStackTrace(); }
 		Resources res = context.getResources();
 
-		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, res.getString(R.string.sendFriendRequestUrl));
+		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, res.getString(R.string.sendAddFriendUrl));
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, addFriendListener, loginSettings);
 	}
-	
+
 	public static void sendAddFriend(int friend, SharedPreferences loginSettings, final Context context){
 		ResponseListener addFriendListener= new ResponseListener() {
 			@Override
@@ -189,41 +265,40 @@ public class CommonFunctions {
 		};
 
 		JSONObject postBody = new JSONObject();
-		
+
 		try {
 			postBody.put("opponentId", friend);
 		}
 		catch (JSONException e) { e.printStackTrace(); }
-		
+
 		Resources res = context.getResources();
 
 		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, res.getString(R.string.sendAddFriendUrl));
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, addFriendListener, loginSettings);
 	}
-	
-	@SuppressLint("NewApi")
-	public static Notification createNotification(Context arg0, int notficationId, String ticker, String title, String contextText, int drawableIdSmall, int drawableIdBig){
-		Intent notificationIntent = new Intent(arg0, AllGamesActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(arg0,
-				notficationId, notificationIntent,
-		        PendingIntent.FLAG_CANCEL_CURRENT);
 
-		Resources res = arg0.getResources();
-		Notification.Builder builder = new Notification.Builder(arg0);
+	//	public static Notification createNotification(Context arg0, int notficationId, String ticker, String title, String contextText, int drawableIdSmall, int drawableIdBig){
+	//		Intent notificationIntent = new Intent(arg0, AllGamesActivity.class);
+	//		PendingIntent contentIntent = PendingIntent.getActivity(arg0,
+	//				notficationId, notificationIntent,
+	//				PendingIntent.FLAG_CANCEL_CURRENT);
+	//
+	//		Resources res = arg0.getResources();
+	//		Notification.Builder builder = new Notification.Builder(arg0);
+	//
+	//		builder.setContentIntent(contentIntent)
+	//		.setSmallIcon(drawableIdSmall)
+	//		.setLargeIcon(BitmapFactory.decodeResource(res, drawableIdBig))
+	//		.setTicker(ticker)
+	//		.setWhen(System.currentTimeMillis())
+	//		.setAutoCancel(true)
+	//		.setContentTitle(title)
+	//		.setContentText(contextText);
+	//		Notification n = builder.getNotification();
+	//		return n;
+	//	}
 
-		builder.setContentIntent(contentIntent)
-		            .setSmallIcon(drawableIdSmall)
-		            .setLargeIcon(BitmapFactory.decodeResource(res, drawableIdBig))
-		            .setTicker(ticker)
-		            .setWhen(System.currentTimeMillis())
-		            .setAutoCancel(true)
-		            .setContentTitle(title)
-		            .setContentText(contextText);
-		Notification n = builder.getNotification();
-		return n;
-	}
-	
 	public static void specialAlert(String title, final int friend, String message, final Context context, final SharedPreferences loginSettings){
 		new AlertDialog.Builder(context)
 		.setTitle(title)
@@ -238,7 +313,28 @@ public class CommonFunctions {
 			}
 		}).show();
 	}
-	
+
+	public static void alertForGiveUp(final Context context, final int gameId, final ResponseListener giveUpListener, final SharedPreferences loginSettings, final int fromActivity){
+		new AlertDialog.Builder(context)
+		.setTitle("Confirm giveup")
+		.setMessage("Do you want to continue?")
+		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				CommonFunctions.giveUp(gameId, giveUpListener, loginSettings);
+
+				if(fromActivity == FROM_STANDARD_ACTIVITY){
+					AllGamesActivity act = (AllGamesActivity) context;
+					act.findAndRemoveGameObj(gameId);
+					act.stopService();
+				}
+			}
+		}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				// Do nothing.
+			}
+		}).show();
+	}
+
 	public static void alertForAddFriend(String title, final int friend, 
 			String message, final Context context, final SharedPreferences loginSettings){
 
@@ -255,40 +351,201 @@ public class CommonFunctions {
 			}
 		}).show();
 	}
-	
-	public static Facebook setFacebookToken(Facebook facebook, SharedPreferences mPrefs){
-		String access_token = mPrefs.getString("access_token", null);
-		long expires = mPrefs.getLong("access_expires", 0);
 
-		if(access_token != null) {
-			facebook.setAccessToken(access_token);
-		}
-		if(expires != 0) {
-			facebook.setAccessExpires(expires);
-		}
+	public static void specialAlertForGameRequest(String title, String message, final int opponentId, final int type, final Context context, final SharedPreferences loginSettings){
+		new AlertDialog.Builder(context)
+		.setTitle(title)
+		.setMessage(message)
+		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				Log.i("opponentID", Integer.toString(opponentId));
 
-		return facebook;
+				CommonFunctions.postAnswerToGameRequest(context, opponentId, type, loginSettings, true);
+			}
+		}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				CommonFunctions.postAnswerToGameRequest(context, opponentId, type, loginSettings, false);
+			}
+		}).show();
+	}
+
+	public static BroadcastReceiver createBroadCastReceiver(Context context, final SharedPreferences loginPreferences, final int fromActivity){
+		return new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Log.i("onReceive", "broadcast");
+				Bundle extras = intent.getExtras();
+
+				if(fromActivity == CommonFunctions.FROM_STANDARD_ACTIVITY){
+					if(extras.containsKey("newChatMsg")){
+						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
+						Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
+					}
+				}
+				else if(fromActivity == CommonFunctions.FROM_CHAT_ACTIVITY){
+					Log.i("gotNewChat", "new chat msg");
+
+					if(extras.containsKey("newChatMsg")){
+						ChatActivity chatActivity = (ChatActivity) context;
+						Log.i("mesg", extras.getString("msg"));
+
+						Log.i("id", chatActivity.getGameId());
+						Log.i("mesg", extras.getString("newChatMsg"));
+
+						if(chatActivity.getGameId().equals(extras.getString("newChatMsg"))){
+							chatActivity.addNewMessage(new Message(extras.getString("msg"), false));
+						}
+						else
+							Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
+					}
+				}
+
+				else if(fromActivity == CommonFunctions.FROM_GAME_ACTIVITY){
+					if(extras.containsKey("newChatMsg")){
+						GameActivity gameActivity = (GameActivity) context;
+
+						if(gameActivity.gameId == Integer.parseInt(extras.getString("newChatMsg")))
+							gameActivity.setGotNewMessage();
+
+						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
+						Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
+					}
+				}
+
+				else if(fromActivity == CommonFunctions.FROM_FINISH_GAME_ACTIVITY){
+					if(extras.containsKey("newChatMsg")){
+						final GameFinishActivity gameFinishActivity = (GameFinishActivity) context;
+
+						if(gameFinishActivity.gameId == Integer.parseInt(extras.getString("newChatMsg"))){
+							ActionBar actionBar = (ActionBar) gameFinishActivity.findViewById(R.id.actionbar);
+							actionBar.removeActionAt(0);
+							gameFinishActivity.setChatIconRed();
+						}
+
+						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
+						Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
+					}
+				}
+
+
+				if(extras.containsKey("generalMessage"))
+					new Alert("System message", extras.getString("generalMessage"), context);
+
+				else if(extras.containsKey("successRegWithGoogle"))
+					CommonFunctions.postRegId(context, context.getSharedPreferences(Login.PREFS_NAME, 0));
+
+				else if(extras.containsKey("gameRequest")){
+					Log.i("opponentId commonfunctions", extras.getString("opponentId"));
+					String message = extras.getString("gameRequest") + " has sent you an game invite. Confirm? (" + extras.getString("type") + ")";
+					specialAlertForGameRequest("Game request", message, Integer.parseInt(extras.getString("opponentId")), CommonFunctions.getMapFromString(extras.getString("type")), context, loginPreferences);
+				}
+
+				else if(extras.containsKey("responseOnGameRequest")){
+					if(extras.getString("responseOnGameRequest").equals("True"))
+						new Alert("Game is being created",extras.getString("opponent") + " accepted your game request and a new game is being created", context);
+					else
+						new Alert("Decline",extras.getString("opponent") + " declined your game request", context);
+				}
+			}
+		};
 	}
 	
-	public static void loginToFacebook(Context ctx, final Facebook facebook, final SharedPreferences mPrefs){
-		facebook.authorize((Activity) ctx, new String[] {}, new DialogListener() {
+	
+	public static void checkIfRegIdIsExpired(Context ctx, SharedPreferences loginSettings){
+  	Time now = new Time();
+  	now.setToNow();
+  	long milliseconds = now.toMillis(false);
+		Log.i("time now: ", Long.toString(milliseconds));
+		Log.i("GCMRegisted is: : ", Long.toString(Login.getTimeSinceReggedForPush(loginSettings)));
+
+  	if(Login.getTimeSinceReggedForPush(loginSettings) <= milliseconds){
+  		GCMRegistrar.register(ctx, "84214609772");
+			String regId = GCMRegistrar.getRegistrationId(ctx);
+			Log.i("GCMRegistar regId is expired, new regId: ", regId);
+			Log.i("GCMRegistar milli: ", Long.toString(GCMRegistrar.getRegisterOnServerLifespan(ctx)));
+			
+			milliseconds += GCMRegistrar.getRegisterOnServerLifespan(ctx);
+	  	Login.setTimeReggedPush(loginSettings, milliseconds);
+  	}
+	}
+
+	public static void regWithGoogleServer(Context ctx, SharedPreferences loginSettings){
+		GCMRegistrar.checkDevice(ctx);
+		GCMRegistrar.checkManifest(ctx);
+
+		String regId = GCMRegistrar.getRegistrationId(ctx);
+		
+		if (regId.equals("")) {
+			Log.i("GCMRegistar regId", "before register");
+
+			GCMRegistrar.register(ctx, "84214609772");
+			regId = GCMRegistrar.getRegistrationId(ctx);
+			Log.i("GCMRegistar regId", regId);
+			
+			
+	  	Time now = new Time();
+	  	now.setToNow();
+	  	long milliseconds = now.toMillis(false);
+	  	milliseconds += GCMRegistrar.getRegisterOnServerLifespan(ctx);
+	  	Login.setTimeReggedPush(loginSettings, milliseconds);
+			
+
+		} else {
+			Log.i("GCM", "Already registered");	
+			Toast.makeText(ctx, "already registered", Toast.LENGTH_LONG).show();
+		}
+
+	}
+
+	public static void postRegId(final Context context, final SharedPreferences loginSettings){
+		Log.i("postRegid", "pushingToServer");
+
+		ResponseListener responseListener = new ResponseListener() {
 			@Override
-			public void onComplete(Bundle values) {
-				SharedPreferences.Editor editor = mPrefs.edit();
-				editor.putString("access_token", facebook.getAccessToken());
-				editor.putLong("access_expires", facebook.getAccessExpires());
-				editor.commit();
-				Log.i("onComplete", "complete");
+			public void onResponseReceived(HttpResponse response, String message) {
+				Log.i("postRegId", message);
+				try {
+					JSONObject obj = new JSONObject(message);
+					if(obj.has("registred")){
+						Toast.makeText(context, "Registered", Toast.LENGTH_LONG).show();
+						Login.setIsReggedPush(loginSettings);
+					}
+					else {
+						Toast.makeText(context, "Retrys regId", Toast.LENGTH_LONG).show();
+						try {
+							Thread.sleep(10000);
+						}
+						catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						postRegId(context, loginSettings);
+					}
+				}
+				catch(JSONException e){ e.printStackTrace(); }
 			}
+		};
 
-			@Override
-			public void onFacebookError(FacebookError error) {}
 
-			@Override
-			public void onError(DialogError e) {}
+		HttpPost httpPost = null;
+		StringEntity se = null;
 
-			@Override
-			public void onCancel() {}
-		});
+		try {
+			httpPost = new HttpPost(new URI(AllGamesActivity.REG_ID_URL));
+			JSONObject post = new JSONObject();
+
+			post.put("regId", Login.getGoogleRegistrationId(loginSettings));
+			se = new StringEntity(post.toString());
+		}
+		catch (URISyntaxException e1) { e1.printStackTrace(); }
+		catch (UnsupportedEncodingException e) { e.printStackTrace(); }
+		catch (JSONException e) { e.printStackTrace(); }
+
+		se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+		httpPost.setEntity(se);
+
+		AsynchronousHttpClient a = new AsynchronousHttpClient();
+		a.sendRequest(httpPost, responseListener, loginSettings);
 	}
 }

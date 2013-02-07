@@ -7,6 +7,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.android.gcm.GCMRegistrar;
 import com.main.helper.*;
 import com.main.activitys.domain.Extrainfo;
 import com.main.activitys.domain.Login;
@@ -22,12 +24,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.View;
-import com.facebook.android.Facebook.*;
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-
 import android.view.Window;
 import android.widget.EditText;
 import com.main.*;
@@ -41,8 +37,8 @@ public class RegisterActivity extends Activity {
 	private String registerUrl = "http://restfulserver.herokuapp.com/user/new";
 	protected String password;
 	private String username;
-	Facebook facebook = new Facebook("271971842906436");
-	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
+//	Facebook facebook = new Facebook("271971842906436");
+//	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 
 
 	private EditText editEmail;
@@ -72,7 +68,7 @@ public class RegisterActivity extends Activity {
 
 		Extrainfo.setAllGamesUrl(extraInfoSettings, "http://restfulserver.herokuapp.com/games");
 		Extrainfo.setGameUrl(extraInfoSettings, "http://restfulserver.herokuapp.com/game/");
-
+		
 		responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
@@ -91,15 +87,15 @@ public class RegisterActivity extends Activity {
 		};
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		facebook.authorizeCallback(requestCode, resultCode, data);
-	}
-
-	public void launchFacebookLogin(View v){
-		CommonFunctions.loginToFacebook(this, facebook, getPreferences(MODE_PRIVATE));
-	}
+//	@Override
+//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		facebook.authorizeCallback(requestCode, resultCode, data);
+//	}
+//
+//	public void launchFacebookLogin(View v){
+//		CommonFunctions.loginToFacebook(this, facebook, getPreferences(MODE_PRIVATE));
+//	}
 
 	/**
 	 * Confirms that the registration went OK
@@ -127,8 +123,7 @@ public class RegisterActivity extends Activity {
 				editor.putString("password", password);
 				editor.commit();
 				Login.setLoggedInRightNow(loginSettings);
-
-
+				Login.setNotReggedPush(loginSettings);
 				startAllGamesActivity(this);
 				finish();
 			}
@@ -142,11 +137,11 @@ public class RegisterActivity extends Activity {
 		}
 	}
 
-
 	public void toLoginActivity(View v){
 		Intent toLogin = new Intent().setClass(this, LoginActivity.class);
 		toLogin.putExtra("fromReg", true);
 		startActivity(toLogin);
+		finish();
 	}
 
 	/**
@@ -155,6 +150,7 @@ public class RegisterActivity extends Activity {
 	 */
 	public void startAllGamesActivity(Context c){
 		Intent allGamesActivity = new Intent().setClass(c, AllGamesActivity.class);
+		allGamesActivity.putExtra("fromRegisterActivity", true);
 		startActivity(allGamesActivity);
 		finish();			// can't return to this activity when signed in
 	}
@@ -166,11 +162,9 @@ public class RegisterActivity extends Activity {
 	 */
 
 	public void postRegisterInfo(View v){
-
 		JSONObject postBody = new JSONObject();
 
 		try {
-
 			if(!validInputData())
 				return;
 
@@ -187,7 +181,8 @@ public class RegisterActivity extends Activity {
 			progDialog = new 
 					ProgressDialogClass(this, 
 							"Signing in", 
-							"Creating user, please wait...");
+							"Creating user, please wait...",
+							15000);
 
 			progDialog.run();
 

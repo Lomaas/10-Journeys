@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<color name="grid_background">#323331</color>
-<color name="grid_openCards_background">#323331</color>
-<color name="cell_empty">#323331</color>
-<color name="cell_filled">#323331</color>
-<color name="cell_empty_hover">#ff00ff00</color>
-<color name="cell_filled_hover">#ffaadddd</color>
-<color name="cell_updated">#FFFFFF</color>
-<color name="red">#ffff0000</color>
-<color name="green">#ff00ff00</color>
-<color name="blue">#ff0000ff</color>
-<color name="yellow">#FFFF00</color>
-<color name="light_blue">#00FFFF</color>
-<color name="transparent">#00000000</color>
-<color name="drop_target_color1">#FF993311</color>
-<color name="drop_target_color2">#FFA99033</color>
-<color name="drop_target_enabled">#FF009933</color>
-<color name="drop_target_disabled">#FFdddddd</color>
+    <color name="grid_background">#323331</color>
+    <color name="grid_openCards_background">#323331</color>
+    <color name="cell_empty">#323331</color>
+    <color name="cell_filled">#00000000</color>
+    <color name="cell_empty_hover">#ff00ff00</color>
+    <color name="cell_filled_hover">#ffaadddd</color>
+    <color name="cell_updated">#FFFFFF</color>
+    <color name="red">#ffff0000</color>
+    <color name="green">#ff00ff00</color>
+    <color name="blue">#ff0000ff</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="light_blue">#00FFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="drop_target_color1">#FF993311</color>
+    <color name="drop_target_color2">#FFA99033</color>
+    <color name="drop_target_enabled">#FF009933</color>
+    <color name="drop_target_disabled">#FFdddddd</color>
+    <color name="textColor">#FFF</color>
+    <color name="textFieldColor">#000</color>
+    <color name="textShadow">#FFF</color>
+    <color name="listViewBg">#DADFEE</color>
+    <color name="sendLightColor">#8897BF</color>
+    <color name="sendMeduimColor">#5D6CA5</color>
+    <color name="sendDarkColor">#515F9F</color>
+    <color name="barDarkColor">#CECECE</color>
+    <color name="barMeduimColor">#DFDEE0</color>
+    <color name="barLightColor">#F2F2F2</color>
+    <color name="orangedark">#BF8F30</color>
+    
+    <color name="graylight">#989898</color>
+    <color name ="darkblue">#0000A0</color>
+    <color name="dodgerblue">#153E7E</color>
+
 </resources>

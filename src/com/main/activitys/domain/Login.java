@@ -8,6 +8,7 @@ import java.util.Date;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.text.format.Time;
 import android.util.Log;
 
 /**
@@ -25,6 +26,43 @@ public class Login {
 	
 	public static int getUserId(SharedPreferences loginSettings){
 		return loginSettings.getInt("userId", 0);
+	}
+	
+	
+	public static void setIsReggedPush(SharedPreferences loginSettings){
+		Editor editor = loginSettings.edit();
+		editor.putBoolean("regPush", true);
+		editor.commit();
+	}
+	
+	public static void setNotReggedPush(SharedPreferences loginSettings){
+		Editor editor = loginSettings.edit();
+		editor.putBoolean("regPush", false);
+		editor.commit();
+	}
+	
+	public static boolean isReggedForPush(SharedPreferences loginSettings){
+		return loginSettings.getBoolean("regPush", false);
+	}
+	
+	public static String getGoogleRegistrationId(SharedPreferences loginSettings){
+		return loginSettings.getString("registrationId", null);
+	}
+	
+	public static void storeGoogleRegistrationId(SharedPreferences loginSettings, String regId){
+		Editor editor = loginSettings.edit();
+		editor.putString("registrationId", regId);
+		editor.commit();
+	}
+	
+	public static int getProfileId(SharedPreferences loginSettings){
+		return loginSettings.getInt("imageId", 0);
+	}
+	
+	public static void storeProfileId(SharedPreferences loginSettings, int imageId){
+		Editor editor = loginSettings.edit();
+		editor.putInt("imageId", imageId);
+		editor.commit();
 	}
 	
 	public static String getStoredPassword(SharedPreferences loginSettings){
@@ -61,37 +99,52 @@ public class Login {
 	}
 	
 	public static void setLoggedInRightNow(SharedPreferences loginSettings){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-		String currentDateandTime = sdf.format(new Date());
-		
+		Time now = new Time();
+  	now.setToNow();
+  	long milliseconds = now.toMillis(false) + 10800000;		// 3 hours expired sessions
+  	
 		Editor editor = loginSettings.edit();
-		editor.putString("time", currentDateandTime);
+		editor.putLong("timeLoggedIn", milliseconds);
 		editor.commit();
 	}
 	
 	public static boolean isSessionExpired(SharedPreferences loginSettings){
-		String timeSinceLoggedIn = loginSettings.getString("time", "null");
+		Time now = new Time();
+  	now.setToNow();
+  	long milliseconds = now.toMillis(false);
+  	
+		long milliSessionExpires = loginSettings.getLong("timeLoggedIn", 0);
 		
-		if(timeSinceLoggedIn.equals("null"))
+		if(milliseconds >= milliSessionExpires){
+			Log.i("isSessionExpired", "yes");
 			return true;
-		
-		Log.i("timeSinceLoggedIn", timeSinceLoggedIn);
-		
-		String [] tmp = timeSinceLoggedIn.split("_");
-		Date timeSinceDate = new Date(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), Integer.parseInt(tmp[3]), Integer.parseInt(tmp[4]), Integer.parseInt(tmp[5]));
-		Log.i("timeSinceLoggedIn", timeSinceDate.toString());
-
-		long difference = timeSinceDate.compareTo(new Date());
-		int days = (int) (difference / (1000 * 60 * 60 * 24));
-		int hours = (int) ((difference- (1000 * 60 * 60 * 24 * days)) / (1000 * 60 * 60));
-		int min = (int) (difference- (1000 * 60 * 60 * 24 * days) - (1000 * 60 * 60 * hours))/ (1000 * 60);		
-		Log.i("days", Integer.toString(days));
-		Log.i("hours", Integer.toString(hours));
-
-		Log.i("min", Integer.toString(min));
-		if(days > 0 || hours > 1 || min >= 60)
-			return true;
-		return false;
+		}
+		else{
+			Log.i("isSessionExpired", "not");
+			return false;
+		}
 	}
+	
+	
+	public static long getBackOffTime(SharedPreferences loginSettings){
+		return loginSettings.getLong("backOffTime", 0);
+	}
+	
+	public static void storeBackOffTime(SharedPreferences loginSettings, long backOffTime){
+		Editor editor = loginSettings.edit();
+		editor.putLong("backOffTime", backOffTime);
+		editor.commit();
+	}
+	
+	public static void setTimeReggedPush(SharedPreferences logPreferences, long time){
+		Editor editor = logPreferences.edit();
+		editor.putLong("timeSinceReggedPush", time);
+		editor.commit();
+	}
+	
+	public static long getTimeSinceReggedForPush(SharedPreferences logPreferences){
+		return logPreferences.getLong("timeSinceReggedPush", 0);
+	}
+	
 }
 

@@ -1,8 +1,11 @@
 package com.main.helper;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import com.main.*;
+import com.main.activitys.AllGamesActivity;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +37,7 @@ public class SeparatedListAdapter extends BaseAdapter {
 	public void addSection(String section, Adapter adapter) {
 		this.headers.add(section);
 		this.sections.put(section, adapter);
+		Log.i(section, "addsection");
 	}
 
 	public void removeSection(String section){
@@ -70,22 +74,28 @@ public class SeparatedListAdapter extends BaseAdapter {
 
 	public int getViewTypeCount() {
 		// assume that headers count as one, then total all sections
-		int total = 1;
+		int total = 2;
 		for(Adapter adapter : this.sections.values())
 			total += adapter.getViewTypeCount();
+//		Log.i("viewTypeCount total", Integer.toString(total));
 		return total;
 	}
 
 	public int getItemViewType(int position) {
+//		Log.i("itemViewType", Integer.toString(position));
+		this.getViewTypeCount();
+		
 		int type = 1;
 		for(Object section : this.sections.keySet()) {
 			Adapter adapter = sections.get(section);
 			int size = adapter.getCount() + 1;
-
+			
+//			Log.i("itemViewType", Integer.toString(position));
+			
 			// check if position inside this section
 			if(position == 0) return TYPE_SECTION_HEADER;
 			if(position < size) return type + adapter.getItemViewType(position - 1);
-
+			
 			// otherwise jump into next section
 			position -= size;
 			type += adapter.getViewTypeCount();
@@ -123,5 +133,6 @@ public class SeparatedListAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
+	
 
 }

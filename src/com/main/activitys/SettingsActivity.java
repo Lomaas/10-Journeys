@@ -1,9 +1,7 @@
 package com.main.activitys;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.http.HttpResponse;
@@ -15,30 +13,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import uit.nfc.AsynchronousHttpClient;
 import uit.nfc.ResponseListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.SessionEvents.AuthListener;
-import com.facebook.android.SessionEvents.LogoutListener;
-import com.facebook.android.BaseRequestListener;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-import com.facebook.android.SessionEvents;
-import com.facebook.android.SessionStore;
-import com.facebook.android.Utility;
 import com.main.*;
+import com.main.activitys.domain.Login;
 import com.main.helper.*;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Resources;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -47,7 +36,8 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Window;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity {
 	boolean CheckboxPreference;
@@ -57,23 +47,55 @@ public class SettingsActivity extends PreferenceActivity {
 	public String secondEditTextPreference;
 	public String customPref;
 	private Handler mHandler;
-
 	private ProgressDialogClass progDialog;
 	private ResponseListener responseListener;
 	public String PREFS_NAME = "loginInfo";
 	public SharedPreferences loginSettings;
 	private SharedPreferences prefs;
 	private String password;
-	private Context ctx;
-	String[] mPermissions = { "offline_access", "user_photos"};
+	private Context ctx = this;
+	String[] mPermissions = { "offline_access", "user_photos" };
 
 	final static int AUTHORIZE_ACTIVITY_RESULT_CODE = 0;
+
+	IntentFilter gcmFilter;
+	private BroadcastReceiver gcmReceiver = null;
+	private static final int PHOTO_SELECTED = 1;
+
+	private boolean isRunning;
+
 
 	private EditTextPreference editTextEmail;
 	private EditTextPreference editTextUsername;
 	private EditTextPreference editTextPassword;
-	private CheckBoxPreference setFacebookLogin;
+	private Preference profilePicture;
+	private Preference introductionCarusell;
+	private CheckBoxPreference notifications;
+	private Preference seeCardStock;
 
+	private Handler handler = new Handler();
+	private Runnable runnable = new Runnable() {        
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ImageView profileImage = (ImageView)findViewById(R.id.preferecneimageview);
+				int profileId = Login.getProfileId(loginSettings);
+				if(profileImage != null){
+					Log.i("imageNotNulaaaaafasfsfsfal", "y");
+					profileImage.setImageResource(Constants.profileArray[profileId]);
+				}
+				else
+					Log.i("imageNullaaaaaafsfsfsfaa", "y");
+				Log.i("profile", Integer.toString(profileId));				
+			}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,12 +103,18 @@ public class SettingsActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.preferences);
 
 		loginSettings = getSharedPreferences(PREFS_NAME, 0);
+		gcmReceiver = CommonFunctions.createBroadCastReceiver(ctx, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);
+		gcmFilter = new IntentFilter();
+
+		gcmFilter.addAction("GCM_RECEIVED_ACTION");
+
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		ctx = this;
 		mHandler = new Handler();
 
 		String email = prefs.getString("email", "Nothing has been entered");
 		String username = prefs.getString("username", "Nothing has been entered");
+
+		seeCardStock = (Preference) findPreference("seeCardStock");
 
 		editTextEmail = (EditTextPreference) findPreference("email");
 		editTextEmail.setSummary(email);
@@ -97,38 +125,61 @@ public class SettingsActivity extends PreferenceActivity {
 		editTextPassword = (EditTextPreference) findPreference("pw");
 		editTextPassword.setSummary("*******");
 
-		setFacebookLogin = (CheckBoxPreference) findPreference("setFacebookLogin");
+		notifications = (CheckBoxPreference) findPreference("wantNotifications");
 
-		Resources res = getResources();
-		Utility.mFacebook = new Facebook(res.getString(R.string.APP_ID));
-		Utility.mAsyncRunner = new AsyncFacebookRunner(Utility.mFacebook);
+		profilePicture = (Preference) findPreference("profilePicture");
 
-		SessionStore.restore(Utility.mFacebook, this);
-		SessionEvents.addAuthListener(new FbAPIsAuthListener());
-		SessionEvents.addLogoutListener(new FbAPIsLogoutListener());
+		introductionCarusell = (Preference)findPreference("introductionCarusell");
+		
+		Preference fullIntro = (Preference)findPreference("fullIntro");
+		
+		Preference tryOutGame = (Preference)findPreference("tryOutGame");
 
-		if(Utility.mFacebook.isSessionValid()){
-			setFacebookLogin.setSummary("Remove Facebook connection");
-			setFacebookLogin.setChecked(true);
-			requestUserData();
-		}
-		else {
-			setFacebookLogin.setChecked(false);
-		}
-		setFacebookLogin.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+		tryOutGame.setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				if (Utility.mFacebook.isSessionValid()) {
-					SessionEvents.onLogoutBegin();
-					AsyncFacebookRunner asyncRunner = new AsyncFacebookRunner(Utility.mFacebook);
-					asyncRunner.logout(ctx, new LogoutRequestListener());
-				} else {
-					Utility.mFacebook.authorize((SettingsActivity)ctx, mPermissions, AUTHORIZE_ACTIVITY_RESULT_CODE, new LoginDialogListener());
-				}
-				return false;
+				Intent intent = new Intent(ctx, TryOutGame.class);
+				startActivity(intent);
+				return true;
+			}
+		});
+		
+		fullIntro.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(ctx, FullRuleset.class);
+				startActivity(intent);
+				return true;
 			}
 		});
 
+		introductionCarusell.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(ctx, IntroductionActivity.class);
+				startActivity(intent);
+				return true;
+			}
+		});
+
+		profilePicture.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(ctx, SelectProfileActivity.class);
+				startActivity(intent);
+				return true;
+			}
+		});
+
+		notifications.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				Editor editor = prefs.edit();
+				editor.putBoolean("wantNotifications",(Boolean) newValue);
+				editor.commit();
+				return true;
+			}
+		});
 
 		editTextEmail.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
 			@Override
@@ -170,6 +221,19 @@ public class SettingsActivity extends PreferenceActivity {
 				evaluateResponse(message);
 			}
 		};
+
+		seeCardStock.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent();
+				intent.setClass(ctx, SeeCardStockActivity.class);
+				intent.putExtra("type", "1");
+				startActivity(intent);
+				return true;
+			}
+		});
+		handler.postDelayed(runnable, 100);
+
 	}
 
 	/* (non-Javadoc)
@@ -178,29 +242,28 @@ public class SettingsActivity extends PreferenceActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!Utility.mFacebook.isSessionValid()) {
-			setFacebookLogin.setChecked(false);
-		} else {
-			Utility.mFacebook.extendAccessTokenIfNeeded(this, null);
-			setFacebookLogin.setChecked(true);
+		isRunning = true;
+		registerReceiver(gcmReceiver, gcmFilter);
+
+		ImageView profileImage = (ImageView)findViewById(R.id.preferecneimageview);
+		int profileId = Login.getProfileId(loginSettings);
+		if(profileImage != null){
+			Log.i("imageNotNulaaaaaal", "y");
+			profileImage.setImageResource(Constants.profileArray[profileId]);
 		}
+		else
+			Log.i("imageNullaaaaaaaa", "y");
+		Log.i("profile", Integer.toString(profileId));
+		
 
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-		/*
-		 * if this is the activity result from authorization flow, do a call
-		 * back to authorizeCallback Source Tag: login_tag
-		 */
-		case AUTHORIZE_ACTIVITY_RESULT_CODE: {
-			Utility.mFacebook.authorizeCallback(requestCode, resultCode, data);
-			break;
-		}      
-		}
-	}
+	protected void onPause(){
+		super.onPause();
+		isRunning = false;
 
+		unregisterReceiver(gcmReceiver);
+	}
 
 	public void evaluateResponse(String message){
 		Log.i("ConfirmLogin", message);
@@ -227,6 +290,7 @@ public class SettingsActivity extends PreferenceActivity {
 				else if(response.has("password")){
 					editor.putString("password", password);
 					editor.commit();
+					Toast.makeText(this, "Password updated", Toast.LENGTH_LONG).show();
 				}
 			}
 			else {
@@ -241,11 +305,13 @@ public class SettingsActivity extends PreferenceActivity {
 		}
 	}
 
+
 	public void postLoginInfo(String tag, String value, String URL){
 		progDialog = new 
 				ProgressDialogClass(this, 
 						"Updating", 
-						"Updating your profile, please wait a moment");
+						"Updating your profile, please wait a moment",
+						15000);
 
 		progDialog.run();
 
@@ -267,119 +333,5 @@ public class SettingsActivity extends PreferenceActivity {
 
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, responseListener, loginSettings);
-	}
-
-
-	/*
-	 * The Callback for notifying the application when authorization succeeds or
-	 * fails.
-	 */
-
-	public class FbAPIsAuthListener implements AuthListener {
-
-		@Override
-		public void onAuthSucceed() {
-			requestUserData();
-		}
-
-		@Override
-		public void onAuthFail(String error) {
-			setFacebookLogin.setSummary("Login Failed: " + error);
-			setFacebookLogin.setChecked(false);
-		}
-	}
-
-	/*
-	 * The Callback for notifying the application when log out starts and
-	 * finishes.
-	 */
-	public class FbAPIsLogoutListener implements LogoutListener {
-		@Override
-		public void onLogoutBegin() {
-		}
-
-		@Override
-		public void onLogoutFinish() {
-			setFacebookLogin.setSummary("You have logged out! Press to login again...");
-		}
-	}
-
-	/*
-	 * Callback for fetching current user's name, picture, uid.
-	 */
-	public class UserRequestListener extends BaseRequestListener {
-
-		@Override
-		public void onComplete(final String response, final Object state) {
-			JSONObject jsonObject;
-			try {
-				jsonObject = new JSONObject(response);
-				Log.i("onComplete", response);
-				final String name = jsonObject.getString("name");
-				Utility.userUID = jsonObject.getString("id");
-
-				mHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						setFacebookLogin.setSummary("Logged in as " + name);
-					}
-				});
-
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	public class LogoutRequestListener extends BaseRequestListener {
-
-		/* (non-Javadoc)
-		 * @see com.facebook.android.AsyncFacebookRunner.RequestListener#onComplete(java.lang.String, java.lang.Object)
-		 */
-		@Override
-		public void onComplete(String response, Object state) {
-
-			mHandler.post(new Runnable() {
-				@Override
-				public void run() {
-					SessionEvents.onLogoutFinish();
-				}
-			});
-		}
-
-	}
-
-	private final class LoginDialogListener implements DialogListener {
-		@Override
-		public void onComplete(Bundle values) {
-			SessionEvents.onLoginSuccess();
-		}
-
-		@Override
-		public void onFacebookError(FacebookError error) {
-			SessionEvents.onLoginError(error.getMessage());
-		}
-
-		@Override
-		public void onError(DialogError error) {
-			SessionEvents.onLoginError(error.getMessage());
-		}
-
-		@Override
-		public void onCancel() {
-			SessionEvents.onLoginError("Action Canceled");
-		}
-	}
-
-
-	/*
-	 * Request user name, and picture to show on the main screen.
-	 */
-	public void requestUserData() {
-		setFacebookLogin.setSummary("Fetching user name...");
-		Bundle params = new Bundle();
-		params.putString("fields", "name");
-		Utility.mAsyncRunner.request("me", params, new UserRequestListener());
 	}
 }

@@ -17,12 +17,18 @@ import com.main.R;
 import com.main.activitys.GameFinishActivity.ImgAdapter;
 import com.main.activitys.domain.Login;
 import com.main.helper.BuildHttpRequest;
+import com.main.helper.CommonFunctions;
 import com.main.helper.ProgressDialogClass;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +51,10 @@ public class HighscoreActivity extends Activity {
 	SharedPreferences loginSettings;
 	Context context = this;
 	private ProgressBar mProgress;
+	
+	Context ctx = this;
+	IntentFilter gcmFilter;
+	private BroadcastReceiver gcmReceiver = null;
 	public static String GET_HIGHSCORE_URL = "http://restfulserver.herokuapp.com/highscore";
 
 
@@ -56,7 +66,25 @@ public class HighscoreActivity extends Activity {
 
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		mProgress = (ProgressBar) findViewById(R.id.progressBar);
+		gcmReceiver = CommonFunctions.createBroadCastReceiver(ctx, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);
 
+		gcmFilter = new IntentFilter();
+		gcmFilter.addAction("GCM_RECEIVED_ACTION");
+		
+		ActionBar actionBar = (ActionBar)findViewById(R.id.actionbar);
+		actionBar.setTitle("Highscore");
+
+		actionBar.setHomeAction(new Action() {
+			@Override
+			public void performAction(View view) {
+				finish();
+			}
+			@Override
+			public int getDrawable() {
+				return R.drawable.arrow_left;
+			}
+		});
+		
 		getHighScoreList = new ResponseListener() {
 
 			@Override
@@ -68,6 +96,16 @@ public class HighscoreActivity extends Activity {
 		};
 
 		getHighScoreData(Login.getUserId(loginSettings));
+	}
+	
+	protected void onPause(){
+		super.onPause();
+		unregisterReceiver(gcmReceiver);
+	}
+	
+	protected void onResume(){
+		super.onResume();
+		registerReceiver(gcmReceiver, gcmFilter);
 	}
 
 	private void getHighScoreData(int UID){
@@ -90,7 +128,7 @@ public class HighscoreActivity extends Activity {
 	public class GridAdapter extends BaseAdapter {
 		private Context mContext;
 		private JSONArray scores = null;
-		private int numberOfColumns = 6;
+		private int numberOfColumns = 5;
 
 		public GridAdapter(Context c, JSONArray scores) {
 			mContext = c;
@@ -124,7 +162,10 @@ public class HighscoreActivity extends Activity {
 				JSONObject obj;
 				try {
 					TextView textView = (TextView)MyView.findViewById(R.id.grid_item_text_highscore);
+
 					if(position < numberOfColumns){
+						textView.setTypeface(null, Typeface.BOLD);
+
   					if(position == 0){
   						textView.setText("Rank");
   					}
@@ -132,15 +173,12 @@ public class HighscoreActivity extends Activity {
   						textView.setText("Name");
   					}
   					else if(position == 2){
-  						textView.setText("Games");
-  					}
-  					else if(position == 3){
   						textView.setText("Wins");
   					}
-  					else if(position == 4){
+  					else if(position == 3){
   						textView.setText("Loss");
   					}
-  					else if(position == 5){
+  					else if(position == 4){
   						textView.setText("Score");
   					}
 					}
@@ -154,20 +192,25 @@ public class HighscoreActivity extends Activity {
   					obj = scores.getJSONObject(posInScores - 1);
   					
   					if(posInGrid == 0)
-  						textView.setText(Integer.toString(posInScores));
-  					else if(posInGrid == 1)
-  						textView.setText(obj.getString("username"));
+  						textView.setText(Integer.toString(obj.getInt("rank")));
+  					
+  					else if(posInGrid == 1){
+  						if(obj.has("fid"))
+  							textView.setText(obj.getString("username") + "[f]");
+  						else
+  							textView.setText(obj.getString("username"));
+  					}
+  					
   					else if(posInGrid == 2)
-  						textView.setText(Integer.toString(obj.getInt("total_games")));
-  					else if(posInGrid == 3)
   						textView.setText(Integer.toString(obj.getInt("total_wins")));
-  					else if(posInGrid == 4){
+  					
+  					else if(posInGrid == 3){
   						Integer totalWins = obj.getInt("total_wins");
   						Integer totalGames = obj.getInt("total_games");
   						
   						textView.setText(Integer.toString(totalGames - totalWins));
   					}
-  					else if(posInGrid == 5)
+  					else if(posInGrid == 4)
   						textView.setText(Integer.toString(obj.getInt("score")));
 					}
 				}

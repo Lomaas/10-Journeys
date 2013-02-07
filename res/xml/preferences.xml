@@ -20,23 +20,41 @@
             android:summary="This allows you to enter a string"
             android:title="Edit password" />
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="setFacebookLogin"
-            android:summary="Connect your account with Facebook to get more out of the app"
-            android:title="Facebook" />
+        <Preference
+            android:key="profilePicture"
+            android:summary="Select a profile picture"
+            android:title="Profile picture"
+            android:widgetLayout="@layout/custom_preference" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Notifications" >
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="notifications"
-            android:title="Enable notifictaions" />
+            android:defaultValue="true"
+            android:key="wantNotifications"
+            android:title="Enable/disable notifications. If the app isn&apos;t in the foreground, you will get noticiations when it&apos;s your turn, new games are created and on friend request" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Card decks" >
+        <Preference
+            android:key="seeCardStock"
+            android:summary="See the card deck for europe"
+            android:title="Europe" >
+        </Preference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Other" >
-        <Preference
-            android:key="loginInfo"
+                <Preference
+            android:key="introductionCarusell"
             android:summary="See the introduction carusell"
             android:title="How to play" >
+        </Preference>
+        <Preference
+            android:key="tryOutGame"
+            android:summary="Interactive tutorial"
+            android:title="Interactive tutorial of how to play" >
+        </Preference>
+
+        <Preference
+            android:key="fullIntro"
+            android:summary="Se the complete rules"
+            android:title="Complete ruleset" >
         </Preference>
     </PreferenceCategory>
 

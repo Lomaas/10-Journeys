@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:background="@drawable/testeurope"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:background="@drawable/testeurope"
+    android:orientation="vertical" >
+
     <com.markupartist.android.widget.ActionBar
         android:id="@+id/actionbar"
         style="@style/ActionBar" >
     </com.markupartist.android.widget.ActionBar>
 
-   <Button
-       android:id="@+id/startNewGameButton"
-       android:layout_width="fill_parent"
-       android:layout_height="wrap_content"
-       android:text="New game"
-       android:background="@drawable/bluee_button"
-       android:onClick="startNewGame"
-       style="@style/ButtonText" />    
-    
+    <Button
+        android:id="@+id/startNewGameButton"
+        style="@style/ButtonText"
+            android:layout_below="@+id/actionbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bluee_button"
+        android:onClick="startNewGame"
+        android:text="New game" />
+
+    <com.google.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="a151084449328bc"
+        ads:loadAdOnCreate="true"
+        ads:testDevices="TEST_EMULATOR, TEST_DEVICE_ID" >
+    </com.google.ads.AdView>
+
     <ListView
         android:id="@android:id/list"
-        android:layout_below="@+id/actionbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_above="@+id/adView"
+        android:layout_below="@+id/startNewGameButton" >
     </ListView>
 
-</LinearLayout>
+</RelativeLayout>

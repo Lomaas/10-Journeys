@@ -27,17 +27,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.TextView;
-import com.facebook.android.Facebook.*;
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
 
 /**
  * The Class LoginActivity. Main class for logging in
@@ -45,8 +38,8 @@ import com.facebook.android.FacebookError;
  * can see that you are at the event.
  */
 public class LoginActivity extends Activity {
-	Facebook facebook = new Facebook("271971842906436");
-	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
+//	Facebook facebook = new Facebook("271971842906436");
+//	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 
 	public String PREFS_NAME = "loginInfo";
 	private String loginUrl = "http://restfulserver.herokuapp.com/user/login";
@@ -83,30 +76,28 @@ public class LoginActivity extends Activity {
 		};
 
 		mPrefs = getPreferences(MODE_PRIVATE);
-		String access_token = mPrefs.getString("access_token", null);
-		long expires = mPrefs.getLong("access_expires", 0);
+				
 
-		GCMRegistrar.checkDevice(this);
-		GCMRegistrar.checkManifest(this);
-		String regId = GCMRegistrar.getRegistrationId(this);
-		if (regId.equals("")) {
-			GCMRegistrar.register(this, "84214609772");
-			regId = GCMRegistrar.getRegistrationId(this);
-			Log.i("GCMRegistar regId", regId);
-		} else {
-			Log.i("GCM", "Already registered");
+		if(extras != null && extras.containsKey("fromAllGamesActivity")){
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			username.setText(prefs.getString("username", "null"));
+			password.setText(prefs.getString("password", "null"));
+			postLoginInfo(prefs.getString("username", "null"), prefs.getString("password", "null"));
+			return;
 		}
-
+		
 		// if not session expired login!
-		//		if(!Login.isSessionExpired(loginSettings)){
-		//			Log.i("sessionNOtExpired", "not expired");
-		//			Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
-		//			startActivity(allGamesActivity);
-		//			finish();			// can't return to this activity when signed in
-		//		}
+		if(!Login.isSessionExpired(loginSettings) ){
+			Log.i("sessionNOtExpired", "not expired");
+			Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
+			startActivity(allGamesActivity);
+			finish();			// can't return to this activity when signed in
+			return;
+		}
 
 		/* Post loginInfo if registered */
 		if(Login.isRegistered(loginSettings)){
+			Log.i("isRegistered", "just posts info");
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			username.setText(prefs.getString("username", "null"));
 			password.setText(prefs.getString("password", "null"));
@@ -121,13 +112,6 @@ public class LoginActivity extends Activity {
 			finish();
 		}
 	}
-	
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-      super.onActivityResult(requestCode, resultCode, data);
-
-      facebook.authorizeCallback(requestCode, resultCode, data);
-  }
 
 	public void evaluateLoginInfo(View v){
 		if(username.getText().length() > 0 && password.getText().length() > 0){
@@ -143,13 +127,15 @@ public class LoginActivity extends Activity {
 	public void toRegisterActivity(View v){
 		Intent registerAct = new Intent().setClass(this, RegisterActivity.class);
 		startActivity(registerAct);
+		finish();
 	}
 
 	public void postLoginInfo(String uname, String pw){
 		progDialog = new 
 				ProgressDialogClass(this, 
 						"Signing in", 
-						"Verifying, please wait...");
+						"Verifying, please wait...",
+						15000);
 
 		progDialog.run();
 
@@ -160,14 +146,8 @@ public class LoginActivity extends Activity {
 
 			httpPost = new HttpPost(new URI(loginUrl));
 
-			String regId = GCMRegistrar.getRegistrationId(this);
-
 			registerInfo.put("Username", uname);
 			registerInfo.put("Password", pw);
-			if(regId != null)
-				registerInfo.put("regId", regId);
-			else 
-				registerInfo.put("regId", "null");
 
 			pword = pw;
 

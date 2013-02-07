@@ -6,7 +6,6 @@ package com.main.helper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;

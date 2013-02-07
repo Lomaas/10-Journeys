@@ -23,20 +23,18 @@ import android.util.Log;
 public class DbAdapter {
 
    // public static final String KEY_CARDS_ID = "cardsId";
-    public static final String KEY_CARD_ID = "cardId";
-    public static final String KEY_LOCATION = "location";
-    public static final String KEY_FID = "FID";
+    public static final String KEY_OPPONENT_ID = "opponent_id";
+    public static final String KEY_TYPE = "type";
     public static final String KEY_USERNAME = "username";
     
     private static final String TAG = "DbAdapter";
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
 
-    private static final String DATABASE_NAME = "data";
-    private static final String DATABASE_TABLE_IMAGES = "images";
-    private static final String DATABASE_TABLE_RECENT = "recent";
+    private static final String DATABASE_NAME = "gamerequests";
+    private static final String DATABASE_TABLE_REQUESTS = "requests";
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
     private final Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -48,10 +46,8 @@ public class DbAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
         	Log.d("onCreateDbAdapter", "dropping images");
-          db.execSQL("DROP TABLE IF EXISTS images");
-          db.execSQL("DROP TABLE IF EXISTS recent");
-          db.execSQL("create table images (cardId integer, location integer);");
-          db.execSQL("create table recent (fid integer, username text);");
+          db.execSQL("create table " + DATABASE_TABLE_REQUESTS +  "(" + KEY_OPPONENT_ID + " integer, " + KEY_TYPE +
+          		" string, " + KEY_USERNAME + " string);");
         }
 
         @Override
@@ -92,9 +88,10 @@ public class DbAdapter {
     }
     
     public void wipeAndCreateDatabase() {
-    	mDb.execSQL("DROP TABLE IF EXISTS images");
-      mDb.execSQL("create table images (cardId integer, location integer);");
-    }
+    	mDb.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_REQUESTS);
+      mDb.execSQL("create table " + DATABASE_TABLE_REQUESTS +  "(" + KEY_OPPONENT_ID + " integer, " + KEY_TYPE +
+      		" string, " + KEY_USERNAME + " string);");   
+      }
 
     /**
      * Inserts a new card into the cardTable using the cardsId and cardId provided. 
@@ -102,12 +99,14 @@ public class DbAdapter {
      * a -1 to indicate failure.
      */
     
-    public long insertCardIdToImageTable(int location, int cardId){
+    public long insertNewGameRequest(int opponentId, String type, String username){
     	ContentValues initialValues = new ContentValues();
-      initialValues.put(KEY_LOCATION, location);
-      initialValues.put(KEY_CARD_ID, cardId);
+      initialValues.put(KEY_OPPONENT_ID, opponentId);
+      initialValues.put(KEY_TYPE, type);
+      initialValues.put(KEY_USERNAME, username);
+      
       try {
-        long tmp = mDb.insertWithOnConflict(DATABASE_TABLE_IMAGES, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        long tmp = mDb.insertWithOnConflict(DATABASE_TABLE_REQUESTS, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
         return tmp;
       }
       catch(android.database.sqlite.SQLiteConstraintException e){
@@ -122,9 +121,9 @@ public class DbAdapter {
      * @param rowId id of note to delete
      * @return true if deleted, false otherwise
      */
-    public boolean deleteCardsForCardsId(long cardId) {
+    public boolean deleteGameRequest(int opponentId) {
 
-        return mDb.delete(DATABASE_TABLE_IMAGES, KEY_CARD_ID + "=" + cardId, null) > 0;
+        return mDb.delete(DATABASE_TABLE_REQUESTS, KEY_OPPONENT_ID + "=" + opponentId, null) > 0;
     }
 
     /**
@@ -132,30 +131,30 @@ public class DbAdapter {
      * 
      * @return Cursor over all cards
      */
-//    public Cursor fetchAllCards() {
+    public Cursor fetchAllGameRequests() {
+        return mDb.query(DATABASE_TABLE_REQUESTS, new String[] {KEY_OPPONENT_ID, KEY_TYPE, KEY_USERNAME}, 
+        		null, null, null, null, null);
+    }
+
+    /**
+     * Return a Cursor positioned at the note that matches the given rowId
+     * 
+     * @param rowId id of note to retrieve
+     * @return Cursor positioned to matching note, if found
+     * @throws SQLException if note could not be found/retrieved
+     */
+//    public Cursor fetchImage(long cardId) throws SQLException {
 //
-//        return mDb.query(DATABASE_TABLE_IMAGES, new String[] {KEY_CARDS_ID, KEY_CARD_ID}, null, null, null, null, null);
+//        Cursor mCursor =
+//
+//            mDb.query(true, DATABASE_TABLE_REQUESTS, new String[] {KEY_LOCATION
+//                    }, KEY_CARD_ID + "=" + cardId, null,
+//                    null, null, null, null);
+//        if (mCursor != null) {
+//            mCursor.moveToFirst();
+//        }
+//        return mCursor;
 //    }
-
-    /**
-     * Return a Cursor positioned at the note that matches the given rowId
-     * 
-     * @param rowId id of note to retrieve
-     * @return Cursor positioned to matching note, if found
-     * @throws SQLException if note could not be found/retrieved
-     */
-    public Cursor fetchImage(long cardId) throws SQLException {
-
-        Cursor mCursor =
-
-            mDb.query(true, DATABASE_TABLE_IMAGES, new String[] {KEY_LOCATION
-                    }, KEY_CARD_ID + "=" + cardId, null,
-                    null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
     
     /**
      * Return a Cursor positioned at the note that matches the given rowId
@@ -164,43 +163,43 @@ public class DbAdapter {
      * @return Cursor positioned to matching note, if found
      * @throws SQLException if note could not be found/retrieved
      */
-    public Cursor fetchCardId(long resourceId) throws SQLException {
-        Cursor mCursor =
-
-            mDb.query(true, DATABASE_TABLE_IMAGES, new String[] {KEY_LOCATION
-                    }, KEY_LOCATION + "=" + resourceId, null,
-                    null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-    }
+//    public Cursor fetchCardId(long resourceId) throws SQLException {
+//        Cursor mCursor =
+//
+//            mDb.query(true, DATABASE_TABLE_IMAGES, new String[] {KEY_LOCATION
+//                    }, KEY_LOCATION + "=" + resourceId, null,
+//                    null, null, null, null);
+//        if (mCursor != null) {
+//            mCursor.moveToFirst();
+//        }
+//        return mCursor;
+//    }
     
     
-    public Cursor fetchRecent(long resourceId) throws SQLException {
-      Cursor mCursor =
-          mDb.query(true, DATABASE_TABLE_RECENT, new String[] {KEY_FID, KEY_USERNAME
-                  }, null, null, null, null, null, null);
-      if (mCursor != null) {
-          mCursor.moveToFirst();
-      }
-      return mCursor;
-  }
+//    public Cursor fetchRecent(long resourceId) throws SQLException {
+//      Cursor mCursor =
+//          mDb.query(true, DATABASE_TABLE_RECENT, new String[] {KEY_FID, KEY_USERNAME
+//                  }, null, null, null, null, null, null);
+//      if (mCursor != null) {
+//          mCursor.moveToFirst();
+//      }
+//      return mCursor;
+//  }
     
-  public long insertNewPlayerImageRecent(int fid, String username){
-  	ContentValues initialValues = new ContentValues();
-    initialValues.put(KEY_LOCATION, fid);
-    initialValues.put(KEY_CARD_ID, username);
-    
-    try {
-      long tmp = mDb.insertWithOnConflict(DATABASE_TABLE_RECENT, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
-      
-      
-      return tmp;
-    }
-    catch(android.database.sqlite.SQLiteConstraintException e){
-    	e.printStackTrace();
-    }
-   	return -1;
-  }
+//  public long insertNewPlayerImageRecent(int fid, String username){
+//  	ContentValues initialValues = new ContentValues();
+//    initialValues.put(KEY_LOCATION, fid);
+//    initialValues.put(KEY_CARD_ID, username);
+//    
+//    try {
+//      long tmp = mDb.insertWithOnConflict(DATABASE_TABLE_RECENT, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+//      
+//      
+//      return tmp;
+//    }
+//    catch(android.database.sqlite.SQLiteConstraintException e){
+//    	e.printStackTrace();
+//    }
+//   	return -1;
+//  }
 }

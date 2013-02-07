@@ -1,33 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">10 Journeys</string>
     <string name="register">Register</string>
     <string name="signin">Sign in</string>
-  	<string name="sendAppRequest">Join me on my journey</string>     
+    <string name="sendAppRequest">Join me on my journey</string>
     <string name="action_waiting">The other player is finishing start up</string>
     <string name="login">To login</string>
- 	<string name="instructions">Add an image. Then press on image to drag it. Drop it on the grid.</string> 
- 	<string name="ticker_new_friend">You have a new friend request</string>  
- 	<string name="ticker_new_friend_title">Friend request</string>  
-  	<string name="ticker_new_friend_text">You got a new friend request.</string>  
-  	<string name="sendAddFriendUrl">http://restfulserver.herokuapp.com/user/add_friend</string>
- 	<string name="sendFriendRequestUrl">http://restfulserver.herokuapp.com/user/friend_request</string>
+    <string name="instructions">Add an image. Then press on image to drag it. Drop it on the grid.</string>
+    <string name="ticker_new_friend">You have a new friend request</string>
+    <string name="ticker_new_friend_title">Friend request</string>
+    <string name="ticker_new_friend_text">You got a new friend request.</string>
+    <string name="sendAddFriendUrl">http://restfulserver.herokuapp.com/user/add_friend</string>
+    <string name="removeFriendUrl">http://restfulserver.herokuapp.com/user/remove_friend</string>
+    <string name="startUpText">Slide your finger over the screen to start the tutorial</string>
+    <string name="action_your_turn">. Take a card from one of the 3 piles or from the card deck</string>
+    <string name="goal_of_game">The goal of the game is to get 10 cards, each card representing either a country, flight, bus or boat, that is correctly connected</string>
+    <string name="valid_route">Example of a valid route</string>
+    <string name="start_up">In the beginning of the game you will get 10 cards, one after one. You have to place them into.. </string>
+    <string name="normal_phase">After the start up you will start with exchanging your cards to get a correct route</string>
     <string name="APP_ID">271971842906436</string>
- 	
- 	
+    <string name="hello">Hello World, MessageActivity!</string>
+    <string name="main_empty_list">There is no recent conversation, write new message
+		to start one.</string>
+
     <color name="white">#FFFFFF</color>
     <color name="darkgray">#323331</color>
     <color name="black">#000000</color>
+    <color name="lightgray">#F8F8F8</color>
+
     <string name="country_prompt">Choose a map</string>
+
     <string-array name="options_game">
-        <item>Reset view</item>
         <item>Add opponent to friendslist</item>
         <item>Start new game w/opponent</item>
         <item>Give up</item>
+        <item>Special rules</item>
     </string-array>
     <string-array name="country_arrays">
         <item>Europe</item>
     </string-array>
+
     <integer name="num_images">10</integer>
     <integer name="num_columns">5</integer>
 

@@ -1,0 +1,4 @@
+<com.markupartist.android.widget.ActionBar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/actionbar"
+    style="@style/ActionBar"
+    android:gravity="top" />

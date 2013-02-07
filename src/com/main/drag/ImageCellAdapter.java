@@ -78,11 +78,13 @@ public class ImageCellAdapter extends BaseAdapter
 			LinearLayout.LayoutParams params = null;
 			
 			if(gridView.getId() == R.id.gridForCardsOnTable){
-				params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, 130);
+				float py = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 62, r.getDisplayMetrics());
+				params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, (int)py);
+				v.setPadding(0, 0, 0, 4);
 			}
 			else {
-				float py = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
-				params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, 130);
+				float py = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, r.getDisplayMetrics());
+				params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, (int) py);
 				v.setPadding(3, 3, 3, 3);
 			}
 			v.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -109,13 +111,21 @@ public class ImageCellAdapter extends BaseAdapter
 //				Log.d("convertview", "test2");
 				v.draggable = false;
 			}
-
-//			Log.d("convertview", "test3");
+			else if(gameActivity.getState() == GameActivity.YOUR_TURN_FROM_DECK){		// newly added 01-09
+				v.draggable = false;
+//				Log.d("convertview", "test3");
+			}
+			else if(gameActivity.getState() == GameActivity.YOUR_TURN_INSERT_TO_OPEN_CARDS){
+				v.draggable = false;
+			}
 			v.mEmpty = false;
+//			Log.d("state", Integer.toString(gameActivity.getState()));
 			
 			if(gameGUIS.get(position).isUpdated()){
 				v.draggable = true;
-				v.setBackgroundResource (R.color.cell_empty_hover);
+//				Log.i("are you here", "getView adapter");
+				if(v.allowDrag())
+					v.setBackgroundResource (R.color.cell_empty_hover);
 			}
 			else
 				v.setBackgroundResource (R.color.cell_filled);
@@ -128,6 +138,7 @@ public class ImageCellAdapter extends BaseAdapter
 		else {			
 			if(v.mGrid.getId() == R.id.gridForCardsOnTable){
 				setCellDrawableForOpenCards(position, v);
+//				Log.d("convertview", "gridForCardsOnTable");
 			}
 			else
 				setCellDrawable(position, v);
@@ -171,7 +182,6 @@ public class ImageCellAdapter extends BaseAdapter
 			cell.setImageResource ( R.drawable.cards_cell9);
 		else if(position == 10)
 			cell.setImageResource ( R.drawable.cards_cell10);
-
 	}
 
 	public static void setCellDrawableForOpenCards(int position, ImageCell cell){
@@ -183,6 +193,5 @@ public class ImageCellAdapter extends BaseAdapter
 			cell.setImageResource ( R.drawable.cards_opencard2);
 		else if(position == 3)
 			cell.setImageResource ( R.drawable.cards_opencard3);
-
-	}
+	}	
 }

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.main.R;
 import com.main.activitys.GameActivity;
 import com.main.activitys.domain.GameGUI;
+import com.main.helper.Alert;
 import com.main.helper.NoZoomControllWebView;
 
 /**
@@ -40,7 +41,7 @@ implements DragSource, DropTarget
 	public int fromGridId;
 	public boolean draggable = true;
 	public boolean shouldBeOpenCard = false;
-
+	public int counterPressed = 0;
 
 	/**
 	 * Constructors
@@ -97,6 +98,17 @@ implements DragSource, DropTarget
 			if(!this.draggable)
 				return false;
 
+//			Log.d("mCellNumber", Integer.toString(gameActivity.cellTakenFrom));
+			
+			// TODO if test er lagt til for å ikke få lov til å drage kort når det bare er ett
+			if(mCellNumber == gameActivity.cellTakenFrom && !gameActivity.hasOpenCardParent(mCellNumber) && gameActivity.cellTakenFrom != -1){
+				counterPressed ++;
+				if(counterPressed == 5){
+					counterPressed = 0;
+					new Alert("Notice", "You can't move this card. There is only one card left in the pile", gameActivity);
+				}
+				return false;
+			}
 			Log.d("allowDrag", "is draggable");
 		}
 		return !mEmpty;
@@ -151,10 +163,11 @@ implements DragSource, DropTarget
 					this.draggable = true;
 					gameActivity.setPlayButtonVisible();
 					gameActivity.setState(GameActivity.YOUR_TURN_INSERT_TO_OPEN_CARDS);
-					setBackgroundResource(R.color.cell_empty_hover);
+					Log.i("are you here", "onDropCompleted");
+					if(this.allowDrag())
+						setBackgroundResource(R.color.cell_empty_hover);
 					return;
 				}
-
 
 				int deletedCardId = cardAdapter.getGameGUIS().get(this.mCellNumber).getDeletedCardId();
 				int currentCardId = cardAdapter.getGameGUIS().get(this.mCellNumber).getCurrentCardId();
@@ -166,8 +179,16 @@ implements DragSource, DropTarget
 				GameGUI currentGameGui = gameGui.get(this.mCellNumber);
 
 				if(gameActivity.cellTakenFrom == this.mCellNumber){
-					cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(0, this.mCellNumber, 0, true, deletedCardId, false));
-					ImageCellAdapter.setCellDrawableForOpenCards(this.mCellNumber, this);
+					// TODO kommentert kode var opprinnelige
+					
+					Log.d("onDropCompleted", "cellTakenFrom is this cell");
+					
+					cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(gameActivity.getCardIdFromOpenCardParent(this.mCellNumber), 
+							this.mCellNumber, gameActivity.getCardIdFromOpenCardParent(this.mCellNumber), true, deletedCardId, false));
+					this.setImageResource(gameActivity.getDrawableIdFromCardId(gameActivity.getCardIdFromOpenCardParent(this.mCellNumber)));
+
+					//cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(0, this.mCellNumber, 0, true, deletedCardId, false));
+					//ImageCellAdapter.setCellDrawableForOpenCards(this.mCellNumber, this);
 				}
 				else if(gameActivity.getState() == GameActivity.YOUR_TURN_INSERT_TO_OPEN_CARDS && !isYourCardsGrid() && deletedCardId != 0){
 					mEmpty = false;		// always not empty when coming so far,
@@ -253,6 +274,9 @@ implements DragSource, DropTarget
 		
 		if(gameActivity.getState() == GameActivity.INIT){
 			gameActivity.setImageSourceFrameGone();
+			
+			if(gameActivity.isLastCardInInitPhase(cardAdapter.getGameGUIS()))
+				gameActivity.changeCardDeckButtonForNextPhase();
 		}
 		
 		if(mEmpty == false){			

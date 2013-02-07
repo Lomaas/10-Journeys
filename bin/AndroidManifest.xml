@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.main"
+    android:installLocation="preferExternal"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -9,11 +10,12 @@
         android:targetSdkVersion="15" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.GET_TASKS" />    
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    
     <permission
         android:name="com.main.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
@@ -38,6 +40,11 @@
             </intent-filter>
         </service>
 
+      <activity
+            android:name="com.revmob.ads.fullscreen.FullscreenActivity"
+            android:configChanges="keyboardHidden|orientation" >
+    </activity>
+
         <receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
@@ -48,9 +55,9 @@
                 <category android:name="com.main" />
             </intent-filter>
         </receiver>
-		
-		<service android:name=".GCMIntentService" />
-        
+
+        <service android:name=".GCMIntentService" />
+
         <activity android:name=".DragableActivity" >
         </activity>
         <activity
@@ -71,6 +78,14 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="com.main.activitys.SelectProfileActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.main.activitys.TestActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="com.main.activitys.AllGamesActivity"
             android:screenOrientation="portrait" >
         </activity>
@@ -80,7 +95,6 @@
         </activity>
         <activity
             android:name="com.main.activitys.GameActivity"
-            android:noHistory="true"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -110,7 +124,34 @@
         <activity
             android:name="com.main.activitys.HighscoreActivity"
             android:screenOrientation="portrait" >
-        </activity>        
+        </activity>
+        <activity
+            android:name="com.main.activitys.SeeCardStockActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.main.activitys.OpponentStatsActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.main.activitys.ChatActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.main.activitys.FullRuleset"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.main.activitys.TryOutGame"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.main.activitys.IntroductionActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.google.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
     </application>
 
 </manifest>

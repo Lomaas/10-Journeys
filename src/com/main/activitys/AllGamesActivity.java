@@ -1,16 +1,28 @@
 package com.main.activitys;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.SimpleTimeZone;
+
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.main.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import uit.nfc.AsynchronousHttpClient;
 import uit.nfc.ResponseListener;
 import com.main.activitys.domain.Extrainfo;
@@ -18,10 +30,13 @@ import com.main.activitys.domain.Game;
 import com.main.helper.*;
 import com.main.activitys.domain.Login;
 import com.main.service.TimerService;
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 
-import com.facebook.android.Facebook;
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
+import com.google.ads.InterstitialAd;
 import com.google.android.gcm.GCMRegistrar;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +44,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -40,52 +56,29 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+
+
 public class AllGamesActivity extends ListActivity {
+  private InterstitialAd interstitial;
+
 	private Intent serviceintent;
 	private SharedPreferences loginSettings;
 	private SharedPreferences extraInfoSettings;
 	public ResponseListener giveUpListener;
 	public ResponseListener startGameListener;
-	public Context context;
-	public Facebook facebook = new Facebook("271971842906436");
-	
+	public Context context = this;
+
 	public static String NOTIFICATION_FRIEND_REQUEST = "NOTIFICATION_FRIEND_REQUEST";
+	public static String NOTIFICATION_YOUR_TURN = "NOTIFICATION_YOUR_TURN";
+	public static String NOTIFICATION_NEW_GAME= "NOTIFICATION_NEW_GAME";
+
 	public static int RANDOM_GAMEREQ_RESP = 1;
 	public static int BACK_FROM_GAMER = 2;
-	private boolean resetSections = false;
 
 	public static String GIVE_UP_URL = "http://restfulserver.herokuapp.com/finish/give_up";
+	public static String REG_ID_URL = "http://restfulserver.herokuapp.com/user/reg_id";
 
-	//	private DbAdapter mDbHelper;
-	public static Integer[] imageArray = {
-		R.drawable.ic_launcher,
-		R.drawable.cards_sweden, R.drawable.cards_norway,
-		R.drawable.cards_finaland, R.drawable.cards_russia,
-		R.drawable.cards_iceland, R.drawable.cards_ireland,
-		R.drawable.cards_uk, R.drawable.cards_estonia,
-		R.drawable.cards_lativa, R.drawable.cards_lithuania,
-		R.drawable.cards_poland, R.drawable.cards_germany,
-		R.drawable.cards_denmark, R.drawable.cards_netherlands,
-		R.drawable.cards_belgia,R.drawable.cards_italy,
-		R.drawable.cards_slovenia, R.drawable.cards_croatia,
-		R.drawable.cards_czech_republic, R.drawable.cards_slovakia,
-		R.drawable.cards_belarus, R.drawable.cards_ukranie,
-		R.drawable.cards_austria, R.drawable.cards_switzerland,
-		R.drawable.cards_france, R.drawable.cards_luxemburg,
-		R.drawable.cards_andorra, R.drawable.cards_spain,
-		R.drawable.cards_portugal, R.drawable.cards_bosnia_herzegovina,
-		R.drawable.cards_hungary, R.drawable.cards_kosovo,
-		R.drawable.cards_turkey, R.drawable.cards_serbia,
-		R.drawable.cards_albania, R.drawable.cards_greece,
-		R.drawable.cards_motenegro, R.drawable.cards_macedonia,
-		R.drawable.cards_bulgaria, R.drawable.cards_moldova, 
-		R.drawable.cards_airplane_blue, R.drawable.cards_airplane_green,
-		R.drawable.cards_airplane_brown, R.drawable.cards_airplane_red,
-		R.drawable.cards_airplane_yellow, R.drawable.cards_atlantic_sea,
-		R.drawable.cards_mediterrean_sea, R.drawable.cards_baltic_sea
-	};
-
-	private SeparatedListAdapter adapter; 
+	private SeparatedListAdapter adapter = null;
 	private ArrayList<Game> mineTurnList;
 	private ArrayList<Game> opponentTurnList;
 	private ArrayList<Game> finishedGamesList;
@@ -93,6 +86,9 @@ public class AllGamesActivity extends ListActivity {
 	public static String opponentTurnListSection = "Opponents turn";
 	public static String yourTurnListSection = "Your turn";
 	public static String finishedTurnListSection = "Finished games";
+
+	IntentFilter gcmFilter;
+	private BroadcastReceiver gcmReceiver = null;
 
 
 	/** Called when the activity is first created. */
@@ -102,25 +98,25 @@ public class AllGamesActivity extends ListActivity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.all_games);
 		context = this;
-		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
-		extraInfoSettings = getSharedPreferences(Extrainfo.PREFS_NAME, 0);
-		//		updateDatabase();
-		
-		Bundle extras = getIntent().getExtras();
-		
-		if(extras != null && extras.getBoolean(NOTIFICATION_FRIEND_REQUEST)){
-			Resources res = getResources();
+		loginSettings = getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE);
+		gcmReceiver = CommonFunctions.createBroadCastReceiver(context, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);
 
-			CommonFunctions.alertForAddFriend(res.getString(R.string.ticker_new_friend_title), extras.getInt("fid"), 
-				extras.getString("opponentUsername") + " wants to add you to his friendslist. Confirm?", this, loginSettings);
-		}
+		extraInfoSettings = getSharedPreferences(Extrainfo.PREFS_NAME, 0);
+
+		gcmFilter = new IntentFilter();
+		gcmFilter.addAction("GCM_RECEIVED_ACTION");
+
+		Bundle extras = getIntent().getExtras();
 		
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.app_name);
-		
-		final Action highscoreAction = new IntentAction(this, new Intent(this, HighscoreActivity.class), R.drawable.ic_launcher);
+
+		final Action oppontentStatAction = new IntentAction(this, new Intent(this, OpponentStatsActivity.class), R.drawable.stat);
+		actionBar.addAction(oppontentStatAction);
+
+		final Action highscoreAction = new IntentAction(this, new Intent(this, HighscoreActivity.class), R.drawable.rank);
 		actionBar.addAction(highscoreAction);
-		
+
 		final Action settingsAction = new IntentAction(this, new Intent(this, SettingsActivity.class), R.drawable.ic_menu_settings);
 		actionBar.addAction(settingsAction);
 
@@ -131,9 +127,6 @@ public class AllGamesActivity extends ListActivity {
 		opponentTurnList = new ArrayList<Game>();
 		finishedGamesList = new ArrayList<Game>();
 
-		adapter = new SeparatedListAdapter(this);
-
-		setListAdapter(adapter);
 		serviceintent = new Intent("com.main.service.TimerService");
 		serviceintent.putExtra(TimerService.URL, Extrainfo.getAllGamesUrl(extraInfoSettings));
 
@@ -144,6 +137,7 @@ public class AllGamesActivity extends ListActivity {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
 				Log.d("Response", response.toString());
+				startService();
 				evaluateResponse(message);
 			}
 		};
@@ -154,6 +148,71 @@ public class AllGamesActivity extends ListActivity {
 				evaluateResponse(message);
 			}
 		};
+
+		if(extras != null && extras.getBoolean(NOTIFICATION_FRIEND_REQUEST)){
+			Resources res = getResources();
+
+			CommonFunctions.alertForAddFriend(res.getString(R.string.ticker_new_friend_title), extras.getInt("fid"), 
+					extras.getString("opponentUsername") + " wants to add you to his friendslist. Confirm?", this, loginSettings);
+		}
+		if(extras != null && extras.getBoolean(NOTIFICATION_FRIEND_REQUEST)){
+			Resources res = getResources();
+
+			CommonFunctions.alertForAddFriend(res.getString(R.string.ticker_new_friend_title), extras.getInt("fid"), 
+					extras.getString("opponentUsername") + " wants to add you to his friendslist. Confirm?", this, loginSettings);
+		}
+		if(!Login.isReggedForPush(loginSettings))
+			CommonFunctions.regWithGoogleServer(this, loginSettings);
+		else
+			CommonFunctions.checkIfRegIdIsExpired(this, loginSettings);
+		
+		if(extras != null && extras.containsKey("fromRegisterActivity")){
+			Intent intent = new Intent().setClass(this, IntroductionActivity.class);
+			startActivity(intent);
+		}
+		
+		
+	}
+
+	public void postRegId(){
+		ResponseListener responseListener = new ResponseListener() {
+			@Override
+			public void onResponseReceived(HttpResponse response, String message) {
+				Log.i("postRegId", message);
+				try {
+					JSONObject obj = new JSONObject(message);
+					if(obj.has("registred")){
+						Toast.makeText(context, "Registered", Toast.LENGTH_LONG).show();
+						Login.setIsReggedPush(loginSettings);
+					}
+					else {
+						Toast.makeText(context, "Retrys regId", Toast.LENGTH_LONG).show();
+						postRegId();
+					}
+				}
+				catch(JSONException e){ e.printStackTrace();}
+			}
+		};
+
+		HttpPost httpPost = null;
+		StringEntity se = null;
+
+		try {
+			httpPost = new HttpPost(new URI(REG_ID_URL));
+			JSONObject post = new JSONObject();
+
+			post.put("regId", GCMRegistrar.getRegistrationId(this));
+			se = new StringEntity(post.toString());
+		}
+		catch (URISyntaxException e1) { e1.printStackTrace(); }
+		catch (UnsupportedEncodingException e) { e.printStackTrace(); }
+		catch (JSONException e) { e.printStackTrace(); }
+
+		se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+		httpPost.setEntity(se);
+
+		AsynchronousHttpClient a = new AsynchronousHttpClient();
+		a.sendRequest(httpPost, responseListener, loginSettings);
 	}
 
 	@Override
@@ -171,12 +230,14 @@ public class AllGamesActivity extends ListActivity {
 			menu.setHeaderTitle("Options");  
 			menu.add(0, 1, 0, "Add as friend");
 			menu.add(0, 3, 0, "New game w/opponent");
+			menu.add(0, 6, 0, "Chat");
 			menu.add(0, 4, 0, "Remove from list");
-
+			menu.add(0, 5, 0, "Remove all finished games");
 		}
 		else {
 			menu.setHeaderTitle("Options");  
 			menu.add(0, 1, 0, "Add as friend");
+			menu.add(0, 6, 0, "Chat");
 			menu.add(0, 2, 0, "Give up");
 			menu.add(0, 3, 0, "New game w/opponent");
 		}
@@ -196,63 +257,109 @@ public class AllGamesActivity extends ListActivity {
 			CommonFunctions.sendFriendRequest("username", game.getOpponentsUsername().get(0), loginSettings, context);
 			return true;
 		case 2:
-			CommonFunctions.giveUp(game.getGameId(), giveUpListener, loginSettings);
+			CommonFunctions.alertForGiveUp(context, game.getGameId(), giveUpListener, loginSettings, CommonFunctions.FROM_ALL_GAMESACTIVITY);
 			return true;
 		case 3:
-			CommonFunctions.startGameFromUsername(game.getOpponentsUsername().get(0), game.getType(), startGameListener, loginSettings);
+			CommonFunctions.startGameFromUsername(this, game.getOpponentsUsername().get(0), game.getType(), null, loginSettings);
 			return true;
 		case 4:
 			removeFromList(game.getGameId());
 			return true;
+		case 5:
+			removeAllFinishedGames();
+			return true;
+		case 6:
+			startChatActivity(Integer.toString(game.getOpponentId()), Integer.toString(game.getGameId()), game.getOpponentsUsername().get(0));
+			Extrainfo.setNewChatMsg(getSharedPreferences(Extrainfo.PREFS_NAME, 0), Integer.toString(game.getGameId()), false);
+			adapter.notifyDataSetChanged();
 		default:
 			return super.onContextItemSelected(item);
 		}
+	}
+	
+	public void startChatActivity(String opponentId, String gameId, String oppUsername){
+		Intent intent = new Intent().setClass(this, ChatActivity.class);
+		intent.putExtra("opponentId", opponentId);
+		intent.putExtra("gameId", gameId);
+		intent.putExtra("opponentUsername", oppUsername);
+
+		startActivity(intent);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		//		mDbHelper.open();
-    facebook.extendAccessTokenIfNeeded(this, null);
-    
+		registerReceiver(gcmReceiver, gcmFilter);
+		startService();
 		Log.d("OnResume", "are youuuuuuu here");
-		serviceintent.putExtra(TimerService.URL, Extrainfo.getAllGamesUrl(extraInfoSettings));
-		serviceintent.putExtra("broadcast", TimerService.BROADCAST_ACTION_GAMES);
-		startService(serviceintent);
-		registerReceiver(broadcastReceiver, new IntentFilter(TimerService.BROADCAST_ACTION_GAMES));
+		CommonFunctions.findNewGameRequests(this, loginSettings);
+		
+    AdView adView = (AdView)this.findViewById(R.id.adView);
+    adView.loadAd(new AdRequest());
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		//		mDbHelper.close();
+		unregisterReceiver(gcmReceiver);
 		stopService();
 	}
-
+	
+	public void startService(){
+		serviceintent.putExtra(TimerService.URL, Extrainfo.getAllGamesUrl(extraInfoSettings));
+		serviceintent.putExtra("broadcast", TimerService.BROADCAST_ACTION_GAMES);
+		startService(serviceintent);
+		registerReceiver(broadcastReceiver, new IntentFilter(TimerService.BROADCAST_ACTION_GAMES));
+	}
 	public void stopService(){
-		unregisterReceiver(broadcastReceiver);
-		stopService(serviceintent);
+		if(broadcastReceiver != null || serviceintent != null){
+			try{
+				unregisterReceiver(broadcastReceiver);
+			}
+			catch(IllegalArgumentException e) { Log.i("IllegalArgumentException", "broadcastReceiver not regged"); }
+		
+			stopService(serviceintent);
+		}
+	}
+
+	public void findAndRemoveGameObj(int gameId){
+		int pos = 0;
+		if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0){
+			removeGameObj(mineTurnList, pos, yourTurnListSection);
+		}
+		else if((pos = findPosInListFromGameId(opponentTurnList, gameId)) >= 0){
+			removeGameObj(opponentTurnList, pos, opponentTurnListSection);
+		}
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	protected void onListItemClick(ListView list, View view, int position, long id) {
 		super.onListItemClick(list, view, position, id);
 		Log.d("adapter", adapter.getItem(position).toString());
-		Game game = (Game) adapter.getItem(position);
+		Game game = (Game) adapter.getItem(position);	
 
-		//		mDbHelper.close();
-
-		if(game.isFinished() == 1){
+		if(game.isFinished() == 1) {
 			Intent finishIntent = new Intent(this, GameFinishActivity.class);
-			finishIntent.putExtra("cards", game.getOpenCards().toString());
+			finishIntent.putExtra(GameActivity.SELECTED_GAME_ID, game.getGameId());
+			finishIntent.putExtra("cards", game.getOpenCardParents().toString());
 			finishIntent.putExtra("action", game.getLastAction());
 			finishIntent.putExtra("opponent", game.getOpponentsUsername().get(0));
 			finishIntent.putExtra("type", game.getType());
+			Log.i("OPPONENTID", Integer.toString(game.getOpponentId()));
 			finishIntent.putExtra("opponentId", game.getOpponentId());
+			finishIntent.putExtra("last_updated", game.getTimeSinceLastMove());
+			finishIntent.putExtra("date_created", game.getDateCreated());
+			finishIntent.putExtra("image", game.getImageId());
+			finishIntent.putExtra("playersTurn", game.getPlayersTurn());
+			finishIntent.putExtra("YOUR_CARDS", game.getYourCards().toString());	
+			finishIntent.putExtra("openCards", game.getOpenCards().toString());
+			finishIntent.putExtra("openCardParents", game.getOpenCardParents().toString());
+			finishIntent.putExtra("score", game.getScore());
 
-			startActivityForResult(finishIntent, BACK_FROM_GAMER);
+			startActivity(finishIntent);
 		}
-		else{
+		else {
 			Intent gameIntent = new Intent(this, GameActivity.class);
 			gameIntent.putExtra(GameActivity.SELECTED_GAME_ID, game.getGameId());
 			gameIntent.putExtra("STATE", game.getState());
@@ -265,6 +372,10 @@ public class AllGamesActivity extends ListActivity {
 			gameIntent.putExtra("type", game.getType());
 			gameIntent.putExtra("playersTurn", game.getPlayersTurn());
 			gameIntent.putExtra("last_updated", game.getTimeSinceLastMove());
+			gameIntent.putExtra("openCardParents", game.getOpenCardParents().toString());
+			gameIntent.putExtra("date_created", game.getDateCreated());
+			gameIntent.putExtra("image", game.getImageId());
+
 
 			startActivityForResult(gameIntent, BACK_FROM_GAMER);
 		}
@@ -279,7 +390,7 @@ public class AllGamesActivity extends ListActivity {
 				String result= data.getStringExtra("gameInfo");
 				Log.d("RESULT FROM GAME.PY", result);
 
-				try{
+				try {
 					JSONObject gameData = new JSONObject(result);
 					createGameObjAndAddToView(gameData, true);
 				}
@@ -287,10 +398,19 @@ public class AllGamesActivity extends ListActivity {
 			}
 		}
 	}
+	
+	
+	public void startTest(View v){
+		Intent i = new Intent().setClass(this, TestActivity.class);
+		startActivity(i);
+	}
 
+	/* Removes a game from finished game list */
 	private void removeFromList(int gameId){
 		int pos = 0;
-		Log.i("e du her?", "jeg");
+		
+		stopService();
+
 		Log.i("gamedID", Integer.toString(findPosInListFromGameId(finishedGamesList, gameId)));
 		Log.i(finishedGamesList.get(0).getLastAction(), "tets");
 		if ((pos = findPosInListFromGameId(finishedGamesList, gameId)) >= 0){
@@ -298,6 +418,7 @@ public class AllGamesActivity extends ListActivity {
 				@Override
 				public void onResponseReceived(HttpResponse response, String message) {
 					Toast.makeText(context, "Game removed", Toast.LENGTH_LONG).show();
+					startService();
 				}
 			};
 			removeGameFromUsersGames(finishedGamesList.get(pos).getGameId(), responseListener, loginSettings);
@@ -308,6 +429,32 @@ public class AllGamesActivity extends ListActivity {
 		}
 		Log.i("e du her?", "jeg2");
 
+	}
+
+	private void removeAllFinishedGames(){
+		ResponseListener responseListener = new ResponseListener() {				
+			@Override
+			public void onResponseReceived(HttpResponse response, String message) {
+				Toast.makeText(context, "Games removed", Toast.LENGTH_LONG).show();
+				startService();
+			}
+		};
+		stopService();
+		Iterator<Game> iter = finishedGamesList.iterator();
+		JSONArray jArray = new JSONArray();
+
+		while(iter.hasNext()){
+			Game game = (Game) iter.next();
+			jArray.put(game.getGameId());
+		}
+		removeAllGamesFromFinished(jArray, responseListener, loginSettings);
+
+		finishedGamesList.clear();
+		adapter.notifyDataSetChanged();
+	}
+	
+	public void testClickOnImage(){
+		Toast.makeText(this, "hallais", Toast.LENGTH_LONG).show();
 	}
 
 	public void evaluateResponse(String message){
@@ -357,7 +504,7 @@ public class AllGamesActivity extends ListActivity {
 
 			if(intent.getExtras().getString("data").equals("Session expired")){
 				Log.d("UPDATEUI", "SESSION EXPIRED");
-				Intent loginIntent = new Intent(this, LoginActivity.class);
+				Intent loginIntent = new Intent(this, LoginActivity.class).putExtra("fromAllGamesActivity", true);
 				startActivity(loginIntent);
 				finish();
 				return;
@@ -380,28 +527,37 @@ public class AllGamesActivity extends ListActivity {
 		try {
 			int gameId = obj.getInt("GID");
 			int userId = Login.getUserId(loginSettings);
-			long playersTurn = 0;
+			int playersTurn = 0;
 
 			game.setGameId(gameId);
 			game.setOpponentsUsername(obj.getString("opponent"));
 			game.setOpponentId(obj.getInt("opponentId"));
-
-			//	CommonFunctions.insertRecentPlayer(this, obj.getString("opponent"));
+			game.setType(obj.getInt("type"));
+			game.setDateCreated(obj.getString("date_created"));
+			game.setYourCards(obj.getJSONArray("yourCards"));
+			game.setOpenCards(obj.getJSONArray("openCards"));
+			
+			playersTurn = CommonFunctions.safeLongToInt(obj.getLong("playersTurn"));
+			game.setPlayersTurn(playersTurn);
+			
+			if(obj.has("image"))
+				game.setImageId(obj.getInt("image"));
 
 			if (obj.getInt("finished") == 1){
 				Log.i("finish", "isFinished");
 				game.setState(obj.getInt("state"));
 				game.setLastAction(obj.getString("action"));
-				game.setOpenCards(obj.getJSONArray("cards"));
+				game.setOpenCardParents(obj.getJSONArray("cards"));
 				game.setFinished(1);
+				game.setScore(obj.getInt("score"));
 			}
 			else {
-				playersTurn = obj.getLong("playersTurn");
+	
 
 				if(obj.getInt("openCard") < 0){
 					Log.d("sets state", "opponents turn");
 					game.setState(GameActivity.OPPONENTS_TURN);
-					game.setLastAction(getResources().getString(R.string.action_waiting));
+					game.setLastAction("Waiting for " + obj.getString("opponent") + " to finish start up");
 				}
 				else if(playersTurn != userId && obj.getInt("state") != GameActivity.INIT){
 					game.setState(GameActivity.OPPONENTS_TURN);
@@ -412,77 +568,78 @@ public class AllGamesActivity extends ListActivity {
 					game.setLastAction(obj.getString("action"));
 				}
 				game.setOpenCard(obj.getInt("openCard"));
-				game.setYourCards(obj.getJSONArray("yourCards"));
-				game.setType(obj.getInt("type"));
-				game.setOpenCards(obj.getJSONArray("openCards"));
+				game.setOpenCardParents(obj.getJSONArray("openCardParents"));
 			}
 			game.setTimeSinceLastMove(obj.getString("last_updated"));
 
 			addToList(game, playersTurn, userId, gameId, obj.getInt("finished"), game.getState());
-		
+
 			if(setNewViews)
 				setNewView();
-
-			resetSections = false;
 		}
 		catch (JSONException e) { e.printStackTrace(); }
 	}
 
 	private void setNewView(){
-		adapter = new SeparatedListAdapter(this);
+		boolean setAdapter = false;
+
+		if(adapter == null){
+			adapter = new SeparatedListAdapter(this);
+			setAdapter = true;
+		}
 		
 		adapter.removeSection(yourTurnListSection);
 		adapter.removeSection(opponentTurnListSection);
 		adapter.removeSection(finishedTurnListSection);
 
-		if(!mineTurnList.isEmpty())
+		if(!mineTurnList.isEmpty()){
+			Log.i("size", Integer.toString(mineTurnList.size()));
 			adapter.addSection(yourTurnListSection, new GameAdapter (this, android.R.layout.activity_list_item, mineTurnList));
-		if(!opponentTurnList.isEmpty())
-			adapter.addSection(opponentTurnListSection, new GameAdapter (this, android.R.layout.activity_list_item, opponentTurnList));  
+		}
+		if(!opponentTurnList.isEmpty()){
+			adapter.addSection(opponentTurnListSection, new GameAdapter (this, android.R.layout.activity_list_item, opponentTurnList)); 
+		}
 		if(!finishedGamesList.isEmpty())
 			adapter.addSection(finishedTurnListSection, new GameAdapter (this, android.R.layout.activity_list_item, finishedGamesList));
 
-		setListAdapter(adapter);
-		adapter.notifyDataSetChanged();
-		
 		if(adapter.getSectionsCount() < 1)
 			setNewgameButtonVisible();
 		else
 			setNewgameButtonUnVisible();
+		
+		if(setAdapter)
+			setListAdapter(adapter);
+		else
+			adapter.notifyDataSetChanged();
 	}
 
-	private void addToList(Game game, long playersTurn, int userId, int gameId, int finish, int state){
+	private void addToList(Game game, int playersTurn, int userId, int gameId, int finish, int state){
 		int pos;
 
 		if(finish > 0){
-			Log.i("inside finish", Integer.toString(finish));
 			if((pos = findPosInListFromGameId(opponentTurnList, gameId)) >= 0)
 				removeGameObj(opponentTurnList, pos, opponentTurnListSection);
 
 			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
 				removeGameObj(mineTurnList, pos, yourTurnListSection);
-
-			if((pos = findPosInListFromGameId(finishedGamesList, gameId)) >= 0){
-				finishedGamesList.set(pos, game);
-				Log.i("inside finish", "overwrites pos");
-			}
-			else{
-				Log.i("inside finish", "adds pos");
-				finishedGamesList.add(game);	
-			}
+			
+			if((pos = findPosInListFromGameId(finishedGamesList, gameId)) >= 0)
+				removeGameObj(finishedGamesList, pos, finishedTurnListSection);
+			
+			finishedGamesList = addGameObjToList(finishedGamesList, game);
 			return;
 		}
-
+		
+		// If init add in my turn anyway
 		if(state == GameActivity.INIT){
-			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0){
-				Log.i("state init", "should overwrite!");
-
-				mineTurnList.set(pos, game);
-			}
-			else{
-				Log.i("state init", "should add!");
-				mineTurnList.add(game);
-			}
+			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
+				removeGameObj(mineTurnList, pos, yourTurnListSection);
+			
+			Log.i("gamestate init", "adding to view");
+			ArrayList<Game> tmpList = new ArrayList<Game>();
+			tmpList = addGameObjToList(mineTurnList, game);
+			
+			mineTurnList = tmpList;
 			return;
 		}
 
@@ -491,10 +648,9 @@ public class AllGamesActivity extends ListActivity {
 				removeGameObj(opponentTurnList, pos, opponentTurnListSection);
 
 			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
-				mineTurnList.set(pos, game);
-			else
-				mineTurnList.add(game);
-
+				removeGameObj(mineTurnList, pos, yourTurnListSection);
+			
+			mineTurnList = addGameObjToList(mineTurnList, game);
 			return;
 		}
 
@@ -504,10 +660,9 @@ public class AllGamesActivity extends ListActivity {
 			removeGameObj(mineTurnList, pos, yourTurnListSection);
 
 		if((pos = findPosInListFromGameId(opponentTurnList, gameId)) >= 0)
-			opponentTurnList.set(pos, game);
-
-		else
-			opponentTurnList.add(game);
+			removeGameObj(opponentTurnList, pos, opponentTurnListSection);
+		
+		opponentTurnList = addGameObjToList(opponentTurnList, game);
 	}
 
 	private int findPosInListFromGameId(ArrayList<Game> gamesList, int gameId){
@@ -524,17 +679,46 @@ public class AllGamesActivity extends ListActivity {
 
 	private void removeGameObj(ArrayList<Game> list, int pos, String section){
 		list.remove(pos);
-		if(list.isEmpty()){
-			resetSections = true;
-		}
 	}
+	
+	private ArrayList<Game> addGameObjToList(ArrayList<Game> list, Game game){
+		Log.i("size", Integer.toString(list.size()));
 
-	//	// Adds the gameObj sorted by last updated
-	//	private void addGameObjToList(ArrayList<Game> list, Game game){
-	//		for(int i=0; i < list.size(); i++){
-	//			if(list.get(i).getTimeSinceLastMove() >
-	//		}
-	//	}
+		if(!list.isEmpty()){
+			for(int index=0; index < list.size(); index ++){
+      	String timeLast = list.get(index).getTimeSinceLastMove();
+      	String tmpInput = game.getTimeSinceLastMove();
+      	
+//				Log.i("timeSinceLastMove - inside array", list.get(index).getTimeSinceLastMove());
+//				Log.i("timeSinceLastMove - input objTime", game.getTimeSinceLastMove());
+//				Log.i("index", Integer.toString(index));
+				
+				DateFormat myDateFormat = new SimpleDateFormat("HH:mm:ss");
+				
+      	try {
+					Date tempLastDate = myDateFormat.parse(timeLast);
+					long millisecondsLast = tempLastDate.getTime();
+					tempLastDate.setTime(millisecondsLast);
+					
+					Date tempInputDate = myDateFormat.parse(tmpInput);
+					long millisecondsDate = tempInputDate.getTime();
+					tempInputDate.setTime(millisecondsDate);	
+
+					if(tempInputDate.compareTo(tempLastDate) < 0){
+						Log.i("adds", "gameObj");
+						list.add(index, game);
+						return list;
+					}
+				}
+				catch (ParseException e) { e.printStackTrace(); }
+			}
+			list.add(game);
+		}
+		else{
+			list.add(game);
+		}
+		return list;
+	}
 
 	private void setNewgameButtonVisible(){
 		Button button = (Button) findViewById(R.id.startNewGameButton);
@@ -545,7 +729,22 @@ public class AllGamesActivity extends ListActivity {
 		Button button = (Button) findViewById(R.id.startNewGameButton);
 		button.setVisibility(View.GONE);
 	}
-	
+
+	public static void removeAllGamesFromFinished(JSONArray gameIds, ResponseListener responseListener, SharedPreferences loginSettings){
+		JSONObject postBody = new JSONObject();
+
+		try {
+			postBody.put("gids", gameIds);
+		}
+
+		catch (JSONException e) { e.printStackTrace(); }
+
+		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, "http://restfulserver.herokuapp.com/game/remove_games");
+
+		AsynchronousHttpClient a = new AsynchronousHttpClient();
+		a.sendRequest(httpPost, responseListener, loginSettings);
+	}
+
 	public static void removeGameFromUsersGames(int gameId, ResponseListener responseListener, SharedPreferences loginSettings){
 		JSONObject postBody = new JSONObject();
 
@@ -554,63 +753,10 @@ public class AllGamesActivity extends ListActivity {
 		}
 
 		catch (JSONException e) { e.printStackTrace(); }
-		
+
 		HttpPost httpPost = BuildHttpRequest.setEntity(postBody, "http://restfulserver.herokuapp.com/game/remove_game");
 
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, responseListener, loginSettings);
 	}
-	
-	//	allCardsStrings = ["empty", "Norway", "Sweden", "Denmark", "Finland", "Iceland", "Russia", "Ukrania", 
-	//	       						"Belgium", "Nederland", "United-Kingdom", "Germany", "Poland", "Estland", "Spain", 
-	//	       						"France", "Portugal", "Italy", "Greece", "Turkey", "Romania", "Latvia", "Moldova",
-	//	       						"Serbia", "Austria", "Belarus", "Estonia", "Hungary", "Ireland", "Lithuania", "Macedonia",
-	//	       						"Malta", "Slovakia"]
-
-	//	private void updateDatabase(){
-	//		mDbHelper = new DbAdapter(this);
-	//		mDbHelper.open();
-	//		mDbHelper.wipeAndCreateDatabase();
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards1, 1);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards2, 2);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards3, 3);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards4, 4);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards5, 5);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards6, 6);	// russia
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards7, 7);	// Ukrania
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards8, 8);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards9, 9);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards10, 10);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards11, 11);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards12, 12);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards13, 13);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards14, 14);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards15, 15);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards16, 16);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards17, 17);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards18, 18);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards19, 19);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards20, 20);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards21, 21);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards22, 22);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards23, 23);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards24, 24);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards25, 25);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards26, 26);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards27, 27);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards28, 28);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards29, 29);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards30, 30);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards31, 31);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards32, 32);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards33, 33);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards34, 34);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards35, 35);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards36, 36);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards37, 37);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards38, 38);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards39, 39);
-	//		mDbHelper.insertCardIdToImageTable(R.drawable.cards40, 40);
-	//		mDbHelper.close();
-	//	}
 }

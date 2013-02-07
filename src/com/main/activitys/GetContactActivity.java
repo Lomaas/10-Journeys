@@ -18,7 +18,10 @@ import com.main.service.*;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +37,10 @@ public class GetContactActivity extends ListActivity implements AsyncTaskDelegat
 	
 	private ProgressDialogClass progDialog;
 	private ResponseListener responseListener;
+	Context ctx = this;
+	IntentFilter gcmFilter;
+	private BroadcastReceiver gcmReceiver = null;
+	
 	private String getNewGameUrl = "http://restfulserver.herokuapp.com/game/new_email";
 	public SharedPreferences loginSettings;
 
@@ -47,6 +54,10 @@ public class GetContactActivity extends ListActivity implements AsyncTaskDelegat
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
 		setListAdapter(adapter);
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
+		gcmReceiver = CommonFunctions.createBroadCastReceiver(ctx, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);
+
+		gcmFilter = new IntentFilter();
+		gcmFilter.addAction("GCM_RECEIVED_ACTION");
 
 		responseListener = new ResponseListener() {
 			@Override
@@ -63,13 +74,19 @@ public class GetContactActivity extends ListActivity implements AsyncTaskDelegat
 	
 	protected void onResume(){
 		super.onResume();
-		
+		registerReceiver(gcmReceiver, gcmFilter);
+
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		if(Login.isSessionExpired(loginSettings)){
 			Intent loginIntent = new Intent(this, LoginActivity.class);
 			startActivity(loginIntent);
 			finish();
 		}
+	}
+	
+	protected void onPause(){
+		super.onPause();
+		unregisterReceiver(gcmReceiver);
 	}
 	
 	@Override
@@ -124,7 +141,8 @@ public class GetContactActivity extends ListActivity implements AsyncTaskDelegat
 		progDialog = new 
 				ProgressDialogClass(this, 
 						"Finding contact", 
-						"Searching for contact, please wait...");
+						"Searching for contact, please wait...",
+						15000);
 
 		progDialog.run();
 	}
