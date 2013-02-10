@@ -49,9 +49,7 @@ public class SettingsActivity extends PreferenceActivity {
 	private Handler mHandler;
 	private ProgressDialogClass progDialog;
 	private ResponseListener responseListener;
-	public String PREFS_NAME = "loginInfo";
 	public SharedPreferences loginSettings;
-	private SharedPreferences prefs;
 	private String password;
 	private Context ctx = this;
 	String[] mPermissions = { "offline_access", "user_photos" };
@@ -102,18 +100,16 @@ public class SettingsActivity extends PreferenceActivity {
 		//		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		addPreferencesFromResource(R.xml.preferences);
 
-		loginSettings = getSharedPreferences(PREFS_NAME, 0);
+		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		gcmReceiver = CommonFunctions.createBroadCastReceiver(ctx, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);
 		gcmFilter = new IntentFilter();
 
 		gcmFilter.addAction("GCM_RECEIVED_ACTION");
 
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mHandler = new Handler();
 
-		String email = prefs.getString("email", "Nothing has been entered");
-		String username = prefs.getString("username", "Nothing has been entered");
-
+		String email = Login.getEmail(loginSettings);
+		String username = Login.getUsername(loginSettings);
 		seeCardStock = (Preference) findPreference("seeCardStock");
 
 		editTextEmail = (EditTextPreference) findPreference("email");
@@ -174,6 +170,8 @@ public class SettingsActivity extends PreferenceActivity {
 		notifications.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+
 				Editor editor = prefs.edit();
 				editor.putBoolean("wantNotifications",(Boolean) newValue);
 				editor.commit();
@@ -273,34 +271,32 @@ public class SettingsActivity extends PreferenceActivity {
 			response = new JSONObject(message);
 
 			if(response.has("id")){
-				Editor editor = prefs.edit();
-
 				if(response.has("username")){
 					String username = response.getString("username");
-					editor.putString("username", username);
-					editor.commit();
+					Login.storeUsername(loginSettings, username);
 					editTextUsername.setSummary(username);
+					Toast.makeText(this, "Username updated", Toast.LENGTH_LONG).show();
 				}
 				else if(response.has("email")){
 					String email = response.getString("email");
-					editor.putString("email", email);
-					editor.commit();
+					Login.setEmail(loginSettings, email);
 					editTextEmail.setSummary(email);
+					Toast.makeText(this, "Email updated", Toast.LENGTH_LONG).show();
+
 				}
 				else if(response.has("password")){
-					editor.putString("password", password);
-					editor.commit();
+					Login.storePassword(loginSettings, password);
 					Toast.makeText(this, "Password updated", Toast.LENGTH_LONG).show();
 				}
 			}
 			else {
-				new Alert("Ups..", message, this);
+				new Alert("Ups..", response.getString("error"), this);
 			}
 		}
 		catch (JSONException e) { 
 			new Alert("Uups..", message, this);
-			Editor editor = prefs.edit();
-			editor.putString("pw", " ");
+			//Editor editor = prefs.edit();
+			//editor.putString("pw", " ");
 			e.printStackTrace();
 		}
 	}

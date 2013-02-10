@@ -75,7 +75,7 @@ public class CommonFunctions {
 	public static String getMapFromType(int type){
 		switch(type){
 		case 1:
-			return "Europe"; 
+			return "Europe";
 		case 2:
 			return "America";
 		default:
@@ -298,7 +298,7 @@ public class CommonFunctions {
 	//		Notification n = builder.getNotification();
 	//		return n;
 	//	}
-
+ 
 	public static void specialAlert(String title, final int friend, String message, final Context context, final SharedPreferences loginSettings){
 		new AlertDialog.Builder(context)
 		.setTitle(title)
@@ -322,7 +322,7 @@ public class CommonFunctions {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				CommonFunctions.giveUp(gameId, giveUpListener, loginSettings);
 
-				if(fromActivity == FROM_STANDARD_ACTIVITY){
+				if(fromActivity == FROM_ALL_GAMESACTIVITY){
 					AllGamesActivity act = (AllGamesActivity) context;
 					act.findAndRemoveGameObj(gameId);
 					act.stopService();

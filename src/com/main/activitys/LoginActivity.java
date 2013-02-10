@@ -41,7 +41,6 @@ public class LoginActivity extends Activity {
 //	Facebook facebook = new Facebook("271971842906436");
 //	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 
-	public String PREFS_NAME = "loginInfo";
 	private String loginUrl = "http://restfulserver.herokuapp.com/user/login";
 
 	String pword = null;
@@ -50,7 +49,6 @@ public class LoginActivity extends Activity {
 	private ProgressDialogClass progDialog;
 	private ResponseListener responseListener;
 	public SharedPreferences loginSettings;
-	private SharedPreferences mPrefs;
 
 
 	@Override
@@ -59,12 +57,12 @@ public class LoginActivity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
 
-		loginSettings = getSharedPreferences(PREFS_NAME, 0);
+		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		Bundle extras = getIntent().getExtras();
 		username = (TextView) findViewById(R.id.eTextLoginUsername);
 		password = (TextView) findViewById(R.id.ePassword);
 
-		Log.d("password", Login.getStoredPassword(loginSettings));
+		Log.d("password", Login.getPassword(loginSettings));
 
 		responseListener = new ResponseListener() {
 			@Override
@@ -73,16 +71,14 @@ public class LoginActivity extends Activity {
 				progDialog.dissMissProgressDialog();
 				confirmLogin(message);
 			}
-		};
-
-		mPrefs = getPreferences(MODE_PRIVATE);
-				
+		};				
 
 		if(extras != null && extras.containsKey("fromAllGamesActivity")){
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			username.setText(prefs.getString("username", "null"));
-			password.setText(prefs.getString("password", "null"));
-			postLoginInfo(prefs.getString("username", "null"), prefs.getString("password", "null"));
+			String tmpUsername = Login.getUsername(loginSettings);
+			String tmpPassword = Login.getPassword(loginSettings);
+			username.setText(tmpUsername);
+			password.setText(tmpPassword);
+			postLoginInfo(tmpUsername, tmpPassword);
 			return;
 		}
 		
@@ -98,10 +94,11 @@ public class LoginActivity extends Activity {
 		/* Post loginInfo if registered */
 		if(Login.isRegistered(loginSettings)){
 			Log.i("isRegistered", "just posts info");
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			username.setText(prefs.getString("username", "null"));
-			password.setText(prefs.getString("password", "null"));
-			postLoginInfo(prefs.getString("username", "null"), prefs.getString("password", "null"));
+			String tmpUsername = Login.getUsername(loginSettings);
+			String tmpPassword = Login.getPassword(loginSettings);
+			username.setText(tmpUsername);
+			password.setText(tmpPassword);
+			postLoginInfo(tmpUsername, tmpPassword);
 		}
 		else if(extras != null && extras.getBoolean("fromReg")){
 			Log.d("fromReg", "fromReg");
@@ -176,13 +173,9 @@ public class LoginActivity extends Activity {
 				Login.setUserId(loginSettings, response.getInt("UID"));
 				Login.setLoggedInRightNow(loginSettings);
 
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-				Editor editor = prefs.edit();
-				editor.putString("username", response.getString("Username"));
-				editor.putString("email", response.getString("Email"));				
-				editor.putString("password", pword);
-				editor.commit();
+				Login.storeUsername(loginSettings, response.getString("Username"));
+				Login.setEmail(loginSettings, response.getString("Email"));
+				Login.storePassword(loginSettings, pword);
 
 				Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
 				startActivity(allGamesActivity);

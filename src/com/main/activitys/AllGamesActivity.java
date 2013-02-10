@@ -170,50 +170,8 @@ public class AllGamesActivity extends ListActivity {
 			Intent intent = new Intent().setClass(this, IntroductionActivity.class);
 			startActivity(intent);
 		}
-		
-		
 	}
 
-	public void postRegId(){
-		ResponseListener responseListener = new ResponseListener() {
-			@Override
-			public void onResponseReceived(HttpResponse response, String message) {
-				Log.i("postRegId", message);
-				try {
-					JSONObject obj = new JSONObject(message);
-					if(obj.has("registred")){
-						Toast.makeText(context, "Registered", Toast.LENGTH_LONG).show();
-						Login.setIsReggedPush(loginSettings);
-					}
-					else {
-						Toast.makeText(context, "Retrys regId", Toast.LENGTH_LONG).show();
-						postRegId();
-					}
-				}
-				catch(JSONException e){ e.printStackTrace();}
-			}
-		};
-
-		HttpPost httpPost = null;
-		StringEntity se = null;
-
-		try {
-			httpPost = new HttpPost(new URI(REG_ID_URL));
-			JSONObject post = new JSONObject();
-
-			post.put("regId", GCMRegistrar.getRegistrationId(this));
-			se = new StringEntity(post.toString());
-		}
-		catch (URISyntaxException e1) { e1.printStackTrace(); }
-		catch (UnsupportedEncodingException e) { e.printStackTrace(); }
-		catch (JSONException e) { e.printStackTrace(); }
-
-		se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-		httpPost.setEntity(se);
-
-		AsynchronousHttpClient a = new AsynchronousHttpClient();
-		a.sendRequest(httpPost, responseListener, loginSettings);
-	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

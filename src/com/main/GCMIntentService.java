@@ -72,8 +72,6 @@ public class GCMIntentService extends GCMBaseIntentService{
 			}
 		}
 	}
-	
-	
 
 	@Override
 	protected void onRegistered(Context arg0, String arg1) {
@@ -81,6 +79,7 @@ public class GCMIntentService extends GCMBaseIntentService{
 		Login.storeGoogleRegistrationId(getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE), arg1);
 		sendGCMIntent(arg0, "successRegWithGoogle", "jepp", null, null, null, null);
 	}
+	
 
 	@Override
 	protected void onUnregistered(Context arg0, String arg1) {

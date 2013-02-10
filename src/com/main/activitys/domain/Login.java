@@ -55,6 +55,16 @@ public class Login {
 		editor.commit();
 	}
 	
+	public static String getUsername(SharedPreferences loginSettings){
+		return loginSettings.getString("username", "null");
+	}
+
+	public static void storeUsername(SharedPreferences loginSettings, String username){
+		Editor editor = loginSettings.edit();
+		editor.putString("username", username);
+		editor.commit();
+	}
+	
 	public static int getProfileId(SharedPreferences loginSettings){
 		return loginSettings.getInt("imageId", 0);
 	}
@@ -65,8 +75,14 @@ public class Login {
 		editor.commit();
 	}
 	
-	public static String getStoredPassword(SharedPreferences loginSettings){
+	public static String getPassword(SharedPreferences loginSettings){
 		return loginSettings.getString("password", "null");
+	}
+	
+	public static void storePassword(SharedPreferences loginSettings, String password){
+		Editor editor = loginSettings.edit();
+		editor.putString("password", password);
+		editor.commit();
 	}
 	
 	public static void storeSessionId(SharedPreferences loginSettings, String sessionId){
@@ -96,6 +112,10 @@ public class Login {
 		Editor editor = loginSettings.edit();
 		editor.putString("email", email);
 		editor.commit();
+	}
+	
+	public static String getEmail(SharedPreferences loginSettings){
+		return loginSettings.getString("email", "null");
 	}
 	
 	public static void setLoggedInRightNow(SharedPreferences loginSettings){

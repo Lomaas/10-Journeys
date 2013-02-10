@@ -37,9 +37,6 @@ public class RegisterActivity extends Activity {
 	private String registerUrl = "http://restfulserver.herokuapp.com/user/new";
 	protected String password;
 	private String username;
-//	Facebook facebook = new Facebook("271971842906436");
-//	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
-
 
 	private EditText editEmail;
 	private EditText editUsername;
@@ -54,11 +51,6 @@ public class RegisterActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
-
-		//		/* Redirect to login */
-		//		if(Login.isRegistered(loginSettings))
-		//			toLoginActivity(null);
-
 		setContentView(R.layout.register);
 
 		editEmail = (EditText) findViewById(R.id.eTextRegEmail);
@@ -87,16 +79,6 @@ public class RegisterActivity extends Activity {
 		};
 	}
 
-//	@Override
-//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		super.onActivityResult(requestCode, resultCode, data);
-//		facebook.authorizeCallback(requestCode, resultCode, data);
-//	}
-//
-//	public void launchFacebookLogin(View v){
-//		CommonFunctions.loginToFacebook(this, facebook, getPreferences(MODE_PRIVATE));
-//	}
-
 	/**
 	 * Confirms that the registration went OK
 	 * @param responseBody
@@ -115,13 +97,9 @@ public class RegisterActivity extends Activity {
 				Login.setUserId(loginSettings, response.getInt("id"));
 				Login.setRegistered(loginSettings);
 
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-				Editor editor = prefs.edit();
-				editor.putString("username", response.getString("Username"));
-				editor.putString("email", response.getString("Email"));
-				editor.putString("password", password);
-				editor.commit();
+				Login.storeUsername(loginSettings, response.getString("Username"));
+				Login.setEmail(loginSettings, response.getString("Email"));
+				Login.storePassword(loginSettings, password);
 				Login.setLoggedInRightNow(loginSettings);
 				Login.setNotReggedPush(loginSettings);
 				startAllGamesActivity(this);
