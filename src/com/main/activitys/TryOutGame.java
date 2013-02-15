@@ -18,16 +18,13 @@ import com.main.drag2.ImageCellAdapter;
 import com.main.helper.Alert;
 import com.main.helper.CommonFunctions;
 import com.main.helper.Constants;
-import com.main.helper.ProgressDialogClass;
 import com.main.activitys.domain.Extrainfo;
 import com.main.activitys.domain.Game;
 import com.main.activitys.domain.GameGUI;
 import com.main.activitys.domain.Login;
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,6 +35,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -63,8 +61,7 @@ import android.widget.Toast;
 
 // e9f0c2
 
-public class TryOutGame extends Activity implements View.OnLongClickListener, View.OnClickListener, View.OnTouchListener
-{
+public class TryOutGame extends Activity implements View.OnLongClickListener, View.OnClickListener, View.OnTouchListener {
 	private Game gameObject = new Game();
 	private Context context;
 	public int gameId = 1;
@@ -74,6 +71,8 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 	public int cardDeckIndex = 1;
 	public SharedPreferences loginSettings;
 	public SharedPreferences extraInfo;
+	
+	TextView extraInfoText = null;
 
 	private Intent serviceintent;
 
@@ -97,6 +96,65 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 
 	private boolean mLongClickStartsDrag = false;   // If true, it takes a long click to start the drag operation.
 	public static final boolean Debugging = true;   // Use this to see extra toast messages.
+	private Handler handlerOpponentRunning = new Handler();
+
+	private Runnable runnable2 = new Runnable() {
+		@Override
+		public void run() {
+
+			ImageCellAdapter yourCardAdapter= (ImageCellAdapter) ((GridView) findViewById(R.id.image_grid_view)).getAdapter();
+			ImageCellAdapter cardsOnTableAdapter= (ImageCellAdapter) ((GridView) findViewById(R.id.gridForCardsOnTable)).getAdapter();
+
+			Log.i("card", Integer.toString(yourCardAdapter.getGameGUIS().get(0).getCurrentCardId()));
+
+			ArrayList<GameGUI> gameGUIS = yourCardAdapter.getGameGUIS();
+			JSONArray yourCardArray = fixArrays(gameGUIS);
+
+			gameGUIS = cardsOnTableAdapter.getGameGUIS();
+			JSONArray openCardArray = fixArrays(gameGUIS);
+			
+			timePlayed ++;
+			String action = null;
+			try {
+				
+				if(timePlayed == 1){
+					openCardArray.put(0, 40);
+					action ="Computer took a card from deck. Placed Moldova in pile 1, Your turn!";
+				}
+				if(timePlayed == 2){
+					openCardArray.put(2, 41);
+					action = "Computer took a card from deck. Placed blue plane in pile 3. Your turn!";
+				}
+				if(timePlayed == 3){
+					openCardArray.put(1, 47);
+					action = "Computer took a card from deck. Placed a Mediterranean Sea boat in pile 2. Your turn!";
+				}
+				if(timePlayed == 4){
+					openCardArray.put(0, 45);
+					action = "Computer took a card from deck. Placed a Yellow plane in pile 1. Your turn!";
+				}
+				if(timePlayed == 5){
+					specialAlert("Tutorial finish", "The game goes on until a player find a valid travel route", context);
+					return;
+				}
+				
+			}
+			catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			confirmPlay(yourCardArray,
+					openCardArray, 
+					fixOpenCardParent(),
+					0, 
+					2, 
+					action,
+					userId);
+			
+	}
+	};
+	
 	private Handler handler = new Handler();
 
 	private Runnable runnable = new Runnable() {
@@ -128,16 +186,15 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 
 				gameGUIS = cardsOnTableAdapter.getGameGUIS();
 				JSONArray openCardArray = fixArrays(gameGUIS);
-
+				
 				confirmPlay(yourCardArray, 
 						openCardArray, 
-						fixOpenCardParent(), 
+						fixOpenCardParent(),
 						0,
 						2,
 						"Computer: LALALALLAL",
 						userId
 						);
-
 			}
 		}
 	};
@@ -165,6 +222,9 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		extraInfo = getSharedPreferences(Extrainfo.PREFS_NAME, 0);
+		
+		
+		extraInfoText = (TextView)findViewById(R.id.extraInformationText);
 
 		userId = Login.getUserId(loginSettings);
 
@@ -178,7 +238,7 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 
 		try {
 			STATE = GameActivity.INIT;
-			String action = "Please place your 10 start up cards. Press Next Card for the first card";
+			String action = "Place your 10 start up cards. Press Next Card to get the first card";
 			TextView lastAction = (TextView) findViewById(R.id.lastAction);
 			lastAction.setText(action);
 
@@ -465,8 +525,17 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 
 		if(cardDeckIndex == 2){
 			addOpenCardToScreen(cardId);
-			new Alert("How to", "Drag the card to a position in your route you find suitable. Then press next card", this);
+			TextView view = (TextView)findViewById(R.id.lastAction);
+			view.setText("Drag the card to a position in your route you find convenient. Then press next card");
+			view.setBackgroundResource(R.drawable.test);
+			view.setTextColor(getResources().getColor(R.color.black));
+			//extraInfoText.setVisibility(View.VISIBLE);
 			return;
+		}
+		else{
+			TextView view = (TextView)findViewById(R.id.lastAction);
+			view.setBackgroundColor(getResources().getColor(R.color.darktrans));
+			view.setTextColor(getResources().getColor(R.color.white));
 		}
 
 		ImageCellAdapter yourCardAdapter= (ImageCellAdapter) ((GridView) findViewById(R.id.image_grid_view)).getAdapter();
@@ -490,8 +559,7 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 					"Test",
 					userId
 					);
-			new Alert("Next phase", "Now you will start changing your route to make it a valid one ", this);
-
+			new Alert("Next phase", "Turn by turn, exchange one card in your route. The player who first links a valid route together, wins the game", this);
 		}
 		else if(cardDeckIndex > 12){
 			// next phase
@@ -505,7 +573,7 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 					openCardParents,
 					cardId, 
 					INIT, 
-					"Place your 10 start up cards",
+					"Place your 10 start up cards. Press Next Card to get the next card",
 					userId
 					);
 		}
@@ -563,41 +631,19 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 		gameGUIS = cardsOnTableAdapter.getGameGUIS();
 		JSONArray openCardArray = fixArrays(gameGUIS);
 
-
-
 		if(STATE == YOUR_TURN_INSERT_TO_OPEN_CARDS){
-			timePlayed ++;
-			String action = null;
-			try {
-				
-				if(timePlayed == 1){
-					openCardArray.put(0, 40);
-					action ="Computer took a card from deck. Placed Moldova in pile 1";
-				}
-				if(timePlayed == 2){
-					openCardArray.put(2, 41);
-					action = "Computer took a card from deck. Placed blue plane in pile 3";
-				}
-				if(timePlayed == 3){
-					specialAlert("Tutorial finish", "The game goes on until a player find a valid travel around Europe", this);
-					return;
-				}
-			}
-			catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			setViewForOpponentsTurn(false);
+			
+			if(timePlayed == 5){
+				Log.i("timePlayed", " is 5");
+				specialAlert("Tutorial finish", "The game goes on like this until a player finds a valid route", context);
+				return;
+			}
 
-			new Alert("Opponents turn", "Your opponent will now play his turn", this);
-			confirmPlay(yourCardArray,
-					openCardArray, 
-					fixOpenCardParent(),
-					0, 
-					2, 
-					action,
-					userId
-					);
+			ProgressDialogClass progDialogClass = new ProgressDialogClass(this, 
+					"Opponents turn", "Your opponent will now play his turn", 3000);
+			progDialogClass.run();
+			handlerOpponentRunning.postDelayed(runnable2, 2900);
 		}
 		else{
 			confirmPlay(yourCardArray,
@@ -605,7 +651,7 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 					fixOpenCardParent(),
 					0, 
 					2, 
-					"Place your 10 start up cards",
+					"Place your 10 start up cards. Press 'Next Card' to get your next card",
 					userId
 					);
 		}
@@ -739,8 +785,13 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 			}
 		}
 
-		if(numZeros == 1)
+		if(numZeros == 1){
+			TextView view = (TextView)findViewById(R.id.lastAction);
+			view.setText("Press 'Finish start up' button to go to the next phase");
+			view.setBackgroundResource(R.drawable.test);
+			view.setTextColor(getResources().getColor(R.color.black));
 			return true;
+		}
 		else
 			return false;
 	}
@@ -802,9 +853,16 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 			public void onClick(View v) {
 				//				specialAlert("Warning", "You loose the game if your journey's isn't correctly connected. Are you sure you want to continue?", context);
 				Log.i("ON CLICK", "ARE YOU HERE?");
+				TextView view = (TextView)findViewById(R.id.lastAction);
+				view.setBackgroundColor(getResources().getColor(R.color.darktrans));
+				view.setTextColor(getResources().getColor(R.color.white));
 				playMove(null);
 			}
 		});
+		TextView view = (TextView)findViewById(R.id.lastAction);
+		view.setText("Press 'Play Move' to play your turn. When you have a correct route you can press 'End journey'");
+		view.setBackgroundResource(R.drawable.test);
+		view.setTextColor(getResources().getColor(R.color.black));
 
 		addNewCard.setEnabled(true);
 		dynamicAddEndButtonToView();
@@ -1080,4 +1138,46 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 		if (!Debugging) return;
 		toast (msg);
 	}
+	
+	public class ProgressDialogClass implements Runnable {
+		private Context callingActivity;
+		private String title;
+		private String message;
+		private int timeout = 3000;
+
+		/**
+		 * Constructor
+		 */
+		public ProgressDialogClass(Context c, String title, String message, int timeout){
+			this.callingActivity = c;
+			this.title = title;
+			this.message = message;
+			this.timeout = timeout;
+
+		}
+
+		@Override
+		public void run() {
+			final ProgressDialog progDialog = ProgressDialog.show(callingActivity, 
+					title, message,
+					true);
+
+			Log.d("progressDialog", "thread sleep");
+			new Thread(new Runnable() {
+				public void run() {
+					Looper.prepare();
+
+					try {
+						Thread.sleep(timeout);
+						progDialog.dismiss();
+
+					}
+					catch (InterruptedException e) { e.printStackTrace(); }
+
+			    Looper.loop();
+				}
+			}).start();
+		}
+	}
+
 }

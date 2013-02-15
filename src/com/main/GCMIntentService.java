@@ -78,7 +78,7 @@ public class GCMIntentService extends GCMBaseIntentService{
 		Log.i("gcmIntentService - onRegId:", arg1);
 		Login.storeGoogleRegistrationId(getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE), arg1);
 		sendGCMIntent(arg0, "successRegWithGoogle", "jepp", null, null, null, null);
-	}
+	}	
 	
 
 	@Override

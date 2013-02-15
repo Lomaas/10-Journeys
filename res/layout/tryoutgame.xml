@@ -11,7 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
-       <FrameLayout
+        <FrameLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/image_framelayout"
             android:layout_width="wrap_content"
@@ -44,6 +44,17 @@
                 android:background="#80000000"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/extraInformationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:background="@drawable/test"
+                android:layout_marginBottom="80dp"
+                android:visibility="gone"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/black" />
 
             <FrameLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"

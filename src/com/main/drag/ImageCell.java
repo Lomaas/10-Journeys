@@ -8,8 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,7 +15,6 @@ import com.main.R;
 import com.main.activitys.GameActivity;
 import com.main.activitys.domain.GameGUI;
 import com.main.helper.Alert;
-import com.main.helper.NoZoomControllWebView;
 
 /**
  * This subclass of ImageView is used to display an image on an GridView.

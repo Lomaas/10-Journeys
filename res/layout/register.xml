@@ -52,7 +52,7 @@
         style="@style/ButtonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bluebutton"
+        android:background="@drawable/bluee_button"
         android:onClick="postRegisterInfo"
         android:text="@string/register" />
 
@@ -71,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:background="@drawable/bluebutton"
+        android:background="@drawable/bluee_button"
         android:onClick="toLoginActivity"
         android:text="@string/login" />
 

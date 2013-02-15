@@ -112,6 +112,7 @@ public class GameFinishActivity extends Activity{
 		stats.setText("Your stats vs " + extras.getString("opponent"));
 		
 		TextView score = (TextView) findViewById(R.id.textScoreThisGame);
+		
 		if(sign(extras.getInt("score")) == 1){
 			score.setText("+" + Integer.toString(extras.getInt("score")));
 			score.setTextColor(getResources().getColor(R.color.green));

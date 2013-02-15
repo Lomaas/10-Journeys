@@ -215,7 +215,7 @@ public class GetAddedFriendsActivity extends ListActivity {
 			
 			if(array.length() == 0){
 				TextView textView = (TextView)findViewById(R.id.textViewNoFriends);
-				textView.setText("You have no friends yet");
+				textView.setText("You don't have any friends yet. Add one by pressing the button above");
 				textView.setVisibility(View.VISIBLE);
 			}
 			for(i=0; i<array.length(); i++){				

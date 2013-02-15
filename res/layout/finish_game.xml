@@ -38,7 +38,7 @@
     <GridView
         android:id="@+id/MyGrid"
         android:layout_width="fill_parent"
-        android:layout_height="0dip"
+        android:layout_height="wrap_content"
         android:layout_weight="2"
         android:horizontalSpacing="5dp"
         android:numColumns="5"

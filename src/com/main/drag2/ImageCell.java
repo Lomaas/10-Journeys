@@ -182,13 +182,13 @@ implements DragSource, DropTarget
 					// TODO kommentert kode var opprinnelige
 					
 					Log.d("onDropCompleted", "cellTakenFrom is this cell");
-					
+//					
 					cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(TryOutGame.getCardIdFromOpenCardParent(this.mCellNumber), 
 							this.mCellNumber, TryOutGame.getCardIdFromOpenCardParent(this.mCellNumber), true, deletedCardId, false));
 					this.setImageResource(TryOutGame.getDrawableIdFromCardId(TryOutGame.getCardIdFromOpenCardParent(this.mCellNumber)));
 
-					//cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(0, this.mCellNumber, 0, true, deletedCardId, false));
-					//ImageCellAdapter.setCellDrawableForOpenCards(this.mCellNumber, this);
+//					cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(0, this.mCellNumber, 0, true, deletedCardId, false));
+//					ImageCellAdapter.setCellDrawableForOpenCards(this.mCellNumber, this);
 				}
 				else if(TryOutGame.getState() == TryOutGame.YOUR_TURN_INSERT_TO_OPEN_CARDS && !isYourCardsGrid() && deletedCardId != 0){
 					mEmpty = false;		// always not empty when coming so far,

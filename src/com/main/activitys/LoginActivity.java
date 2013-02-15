@@ -90,6 +90,7 @@ public class LoginActivity extends Activity {
 			finish();			// can't return to this activity when signed in
 			return;
 		}
+		
 
 		/* Post loginInfo if registered */
 		if(Login.isRegistered(loginSettings)){
@@ -176,6 +177,7 @@ public class LoginActivity extends Activity {
 				Login.storeUsername(loginSettings, response.getString("Username"));
 				Login.setEmail(loginSettings, response.getString("Email"));
 				Login.storePassword(loginSettings, pword);
+				Login.setRegistered(loginSettings);
 
 				Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
 				startActivity(allGamesActivity);

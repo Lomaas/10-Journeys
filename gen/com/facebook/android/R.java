@@ -19,26 +19,26 @@ public final class R {
 		public static final int tabHost = 0x7f0b0018;
 		public static final int connection_name = 0x7f0b0010;
 		public static final int login = 0x7f0b004f;
-		public static final int uploadedPhoto = 0x7f0b00af;
+		public static final int uploadedPhoto = 0x7f0b00b0;
 		public static final int fqlquery = 0x7f0b003b;
 		public static final int submitButton = 0x7f0b0066;
-		public static final int delete_post_button = 0x7f0b00ac;
+		public static final int delete_post_button = 0x7f0b00ad;
 		public static final int tokenEdit = 0x7f0b00a3;
 		public static final int inputId = 0x7f0b0063;
 		public static final int permission_detail = 0x7f0b0091;
-		public static final int view_post_button = 0x7f0b00ab;
+		public static final int view_post_button = 0x7f0b00ac;
 		public static final int main_list = 0x7f0b007e;
 		public static final int user_permissions_list = 0x7f0b0093;
 		public static final int friend_permissions_list = 0x7f0b0094;
 		public static final int fields_info = 0x7f0b001e;
 		public static final int fields_layout = 0x7f0b0019;
-		public static final int tag_photo_button = 0x7f0b00ae;
+		public static final int tag_photo_button = 0x7f0b00af;
 		public static final int get_permissions_button = 0x7f0b0092;
 		public static final int output = 0x7f0b006a;
 		public static final int fields_checkbox = 0x7f0b001d;
 		public static final int meButton = 0x7f0b0064;
 		public static final int tokenExpiresLabel = 0x7f0b00a4;
-		public static final int apiOutput = 0x7f0b00aa;
+		public static final int apiOutput = 0x7f0b00ab;
 		public static final int backParentButton = 0x7f0b0069;
 		public static final int tokenExpiresEdit = 0x7f0b00a5;
 		public static final int submit_button = 0x7f0b003c;
@@ -51,10 +51,10 @@ public final class R {
 		public static final int profile_pic = 0x7f0b004a;
 		public static final int accessTokenButton = 0x7f0b0061;
 		public static final int user_pic = 0x7f0b004d;
-		public static final int apiOutputLabel = 0x7f0b00a9;
+		public static final int apiOutputLabel = 0x7f0b00aa;
 		public static final int main_api_item = 0x7f0b007f;
 		public static final int imageView1 = 0x7f0b0047;
-		public static final int view_photo_button = 0x7f0b00ad;
+		public static final int view_photo_button = 0x7f0b00ae;
 		public static final int permission_checkbox = 0x7f0b0090;
 		public static final int textDeleteButton = 0x7f0b0065;
 		public static final int refresh_button = 0x7f0b00a6;
@@ -193,6 +193,6 @@ public final class R {
 		public static final int icon_hack = 0x7f02006d;
 		public static final int me = 0x7f020084;
 		public static final int login_button = 0x7f02007f;
-		public static final int x = 0x7f0200a8;
+		public static final int x = 0x7f0200a9;
 	}
 }

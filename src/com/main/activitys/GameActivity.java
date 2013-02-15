@@ -1078,6 +1078,11 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		finishIntent.putExtra("player1", player1);
 		finishIntent.putExtra("player2", player2);
 		finishIntent.putExtra("score", score);
+		finishIntent.putExtra("YOUR_CARDS", gameObject.getYourCards().toString());
+		finishIntent.putExtra("last_updated", "0");
+		finishIntent.putExtra("openCards", gameObject.getOpenCards().toString());
+		finishIntent.putExtra("gameId", gameId);
+
 
 		finishIntent.setClass(this, GameFinishActivity.class);
 		//startActivity(finishIntent);

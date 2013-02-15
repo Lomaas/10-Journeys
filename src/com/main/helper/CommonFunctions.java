@@ -495,7 +495,8 @@ public class CommonFunctions {
 			Log.i("GCM", "Already registered");	
 			Toast.makeText(ctx, "already registered", Toast.LENGTH_LONG).show();
 		}
-
+		postRegId(ctx, loginSettings);
+		
 	}
 
 	public static void postRegId(final Context context, final SharedPreferences loginSettings){
