@@ -24,11 +24,11 @@ public class Constants {
 		R.drawable.ic_launcher,
 		R.drawable.cards_sweden, R.drawable.cards_norway,
 		R.drawable.cards_finaland, R.drawable.cards_russia,
-		R.drawable.cards_iceland, R.drawable.cards_ireland,
+		R.drawable.cards_morocco, R.drawable.cards_ireland,
 		R.drawable.cards_uk, R.drawable.cards_estonia,
 		R.drawable.cards_lativa, R.drawable.cards_lithuania,
 		R.drawable.cards_poland, R.drawable.cards_germany,
-		R.drawable.cards_denmark, R.drawable.cards_netherlands,
+		R.drawable.cards_denmark, R.drawable.cards_netherlands, 	
 		R.drawable.cards_belgia,R.drawable.cards_italy,
 		R.drawable.cards_slovenia, R.drawable.cards_croatia,
 		R.drawable.cards_czech_republic, R.drawable.cards_slovakia,
@@ -46,7 +46,8 @@ public class Constants {
 		R.drawable.cards_airplane_brown, R.drawable.cards_airplane_red,
 		R.drawable.cards_airplane_yellow, R.drawable.cards_atlantic_sea,
 		R.drawable.cards_mediterrean_sea, R.drawable.cards_baltic_sea,
-		R.drawable.cards_train, R.drawable.cards_romania
+		R.drawable.cards_train, R.drawable.cards_romania, R.drawable.cards_algeria, 
+		R.drawable.cards_egypt, R.drawable.cards_libya, R.drawable.cards_tunisia
 	};
 	
 	public static Integer[] profileArray = {
