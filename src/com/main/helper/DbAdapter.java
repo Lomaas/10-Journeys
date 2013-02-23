@@ -27,12 +27,18 @@ public class DbAdapter {
     public static final String KEY_TYPE = "type";
     public static final String KEY_USERNAME = "username";
     
+    
+    public static final String KEY_GAMEID = "gameId";
+    public static final String KEY_INFO = "info";
+
     private static final String TAG = "DbAdapter";
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
 
     private static final String DATABASE_NAME = "gamerequests";
     private static final String DATABASE_TABLE_REQUESTS = "requests";
+    private static final String DATABASE_TABLE_GAMEINFO= "gameinfo";
+
 
     private static final int DATABASE_VERSION = 1;
     private final Context mCtx;
@@ -48,6 +54,8 @@ public class DbAdapter {
         	Log.d("onCreateDbAdapter", "dropping images");
           db.execSQL("create table " + DATABASE_TABLE_REQUESTS +  "(" + KEY_OPPONENT_ID + " integer, " + KEY_TYPE +
           		" string, " + KEY_USERNAME + " string);");
+          db.execSQL("create table " + DATABASE_TABLE_GAMEINFO +  "(" + KEY_GAMEID + " integer, " +
+          		KEY_INFO + " string);");
         }
 
         @Override
@@ -89,8 +97,12 @@ public class DbAdapter {
     
     public void wipeAndCreateDatabase() {
     	mDb.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_REQUESTS);
+    	mDb.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE_GAMEINFO);
+
       mDb.execSQL("create table " + DATABASE_TABLE_REQUESTS +  "(" + KEY_OPPONENT_ID + " integer, " + KEY_TYPE +
-      		" string, " + KEY_USERNAME + " string);");   
+      		" string, " + KEY_USERNAME + " string);");
+      mDb.execSQL("create table " + DATABASE_TABLE_GAMEINFO +  "(" + KEY_GAMEID + " integer, " +
+      		KEY_INFO + " string);");
       }
 
     /**
@@ -114,6 +126,25 @@ public class DbAdapter {
       }
      	return -1;
     }
+    
+    public long insertGameInfo(int gameId, String info){
+    	ContentValues initialValues = new ContentValues();
+      initialValues.put(KEY_GAMEID, gameId);
+      initialValues.put(KEY_INFO, info);
+      
+      try {
+        long tmp = mDb.insertWithOnConflict(DATABASE_TABLE_GAMEINFO, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        return tmp;
+      }
+      catch(android.database.sqlite.SQLiteConstraintException e){
+      	e.printStackTrace();
+      }
+//      catch(android.database.sqlite.SQLiteException e){
+//        mDb.execSQL("create table " + DATABASE_TABLE_GAMEINFO +  "(" + KEY_GAMEID + " integer, "+
+//        		KEY_INFO + " string);");
+//      }
+     	return -1;
+    }
 
     /**
      * Delete the note with the given rowId
@@ -135,6 +166,11 @@ public class DbAdapter {
         return mDb.query(DATABASE_TABLE_REQUESTS, new String[] {KEY_OPPONENT_ID, KEY_TYPE, KEY_USERNAME}, 
         		null, null, null, null, null);
     }
+    
+    public Cursor fetchAllGameInfo(int gameId) {
+      return mDb.query(DATABASE_TABLE_GAMEINFO, new String[] {KEY_GAMEID, KEY_INFO}, KEY_GAMEID + "=" + gameId, 
+      		null, null, null, null, null);
+  }
 
     /**
      * Return a Cursor positioned at the note that matches the given rowId

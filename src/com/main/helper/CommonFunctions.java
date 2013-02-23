@@ -402,9 +402,18 @@ public class CommonFunctions {
 				}
 
 				else if(fromActivity == CommonFunctions.FROM_GAME_ACTIVITY){
-					if(extras.containsKey("newChatMsg")){
-						GameActivity gameActivity = (GameActivity) context;
+					GameActivity gameActivity = (GameActivity) context;
 
+					if(extras.containsKey("cardDeckReset")){
+						if(gameActivity.gameId == Integer.parseInt(extras.getString("gameId"))){
+							new Alert("Card deck reset", "The card deck has been reset", context);
+							Log.i("cardeckReset", "reset");
+						}
+						else {
+							CommonFunctions.setGameInfo(Integer.parseInt(extras.getString("gameId")), "The card deck has been reset", context);
+						}
+					}
+					if(extras.containsKey("newChatMsg")){
 						if(gameActivity.gameId == Integer.parseInt(extras.getString("newChatMsg")))
 							gameActivity.setGotNewMessage();
 
@@ -449,6 +458,24 @@ public class CommonFunctions {
 				}
 			}
 		};
+	}
+	
+	public static void setGameInfo(int gameId, String info, Context ctx){
+		DbAdapter adapter = new DbAdapter(ctx);
+		adapter.open();
+		adapter.insertGameInfo(gameId, info);
+	}
+	
+	public static void getGameInfo(int gameId, Context ctx){
+		DbAdapter adapter = new DbAdapter(ctx);
+		adapter.open();
+		CommonFunctions.setGameInfo(gameId, "This is a test", ctx);
+
+		Cursor cursor = adapter.fetchAllGameInfo(gameId);
+		
+		for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
+			Log.i("gameInfo", cursor.getString(0));
+		}
 	}
 	
 	

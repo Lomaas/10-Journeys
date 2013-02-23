@@ -196,7 +196,11 @@ public class HighscoreActivity extends Activity {
   					
   					else if(posInGrid == 1){
   						if(obj.has("fid"))
-  							textView.setText(obj.getString("username") + "[f]");
+  							textView.setText(obj.getString("username") + "*");
+  						else if(obj.has("yourRank")){
+  							textView.setTypeface(null, Typeface.BOLD);
+  							textView.setText(obj.getString("username"));
+    					}  						
   						else
   							textView.setText(obj.getString("username"));
   					}

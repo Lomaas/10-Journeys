@@ -11,6 +11,17 @@
         style="@style/ActionBar"
         android:gravity="top" />
 
+    <TextView
+        android:id="@+id/textSeeCardStockInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingTop="20dp"
+        android:text="When the card deck it empty (all card have been drawed), it will be reset with all 54 cards"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/white" />
+
     <GridView
         android:id="@+id/MyGrid"
         android:layout_width="fill_parent"

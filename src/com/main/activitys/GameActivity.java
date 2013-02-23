@@ -278,6 +278,8 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		super.onResume();
 		registerReceiver(gcmReceiver, gcmFilter);
 		doPolling();
+		
+		CommonFunctions.getGameInfo(gameId, this);
 	}
 
 	public void onPause(){
@@ -621,6 +623,8 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 				doPolling();
 				return;
 			}
+			if(cards.has("cardDeckReset"))
+				new Alert("Card deck reset", "The card deck has been reset", this);
 			
 			int cardId = cards.getInt("cardId");
 			Log.d("state", Integer.toString(this.getState()));
@@ -784,7 +788,7 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 						jResponse.getInt("player1"), jResponse.getInt("player2"), jResponse.getInt("wins_player1"), jResponse.getInt("wins_player2"), jResponse.getInt("score"));
 				return;
 			}
-
+			
 			JSONArray yourCards = jResponse.getJSONArray("yourCards");
 			JSONArray openCardGui = jResponse.getJSONArray("openCards");
 			JSONArray openCardParents = new JSONArray();

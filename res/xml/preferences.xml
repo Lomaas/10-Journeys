@@ -30,7 +30,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="wantNotifications"
-            android:title="Enable/disable notifications. If the app isn&apos;t in the foreground, you will get noticiations when it&apos;s your turn, new games are created and on friend request" />
+            android:title="Enable/disable notifications"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Card decks" >
         <Preference
