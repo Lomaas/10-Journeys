@@ -252,6 +252,11 @@ public class AllGamesActivity extends ListActivity {
 		Log.d("OnResume", "are youuuuuuu here");
 		CommonFunctions.findNewGameRequests(this, loginSettings);
 		
+		if(!Login.isReggedForPush(loginSettings))
+			CommonFunctions.regWithGoogleServer(this, loginSettings);
+		else
+			CommonFunctions.checkIfRegIdIsExpired(this, loginSettings);
+		
     AdView adView = (AdView)this.findViewById(R.id.adView);
     adView.loadAd(new AdRequest());
 	}

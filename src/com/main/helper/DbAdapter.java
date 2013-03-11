@@ -153,8 +153,11 @@ public class DbAdapter {
      * @return true if deleted, false otherwise
      */
     public boolean deleteGameRequest(int opponentId) {
-
         return mDb.delete(DATABASE_TABLE_REQUESTS, KEY_OPPONENT_ID + "=" + opponentId, null) > 0;
+    }
+    
+    public boolean deleteGameInfo(int gameId){
+      return mDb.delete(DATABASE_TABLE_GAMEINFO, KEY_GAMEID + "=" + gameId, null) > 0;
     }
 
     /**
@@ -170,7 +173,7 @@ public class DbAdapter {
     public Cursor fetchAllGameInfo(int gameId) {
       return mDb.query(DATABASE_TABLE_GAMEINFO, new String[] {KEY_GAMEID, KEY_INFO}, KEY_GAMEID + "=" + gameId, 
       		null, null, null, null, null);
-  }
+    }
 
     /**
      * Return a Cursor positioned at the note that matches the given rowId

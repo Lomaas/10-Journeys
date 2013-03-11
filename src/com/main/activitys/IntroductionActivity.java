@@ -4,6 +4,7 @@
 package com.main.activitys;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import com.main.activitys.domain.*;
@@ -33,6 +34,7 @@ public class IntroductionActivity extends FragmentActivity {
 
 	IntentFilter gcmFilter;
 	ViewFlipper viewFlipper;
+	static Context context;
 
 	private BroadcastReceiver gcmReceiver = null;
 
@@ -41,10 +43,10 @@ public class IntroductionActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
 		setContentView(R.layout.introduction);
 		mAdapter = new MyAdapter(getSupportFragmentManager());
-		
+		context = this;
+
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setOffscreenPageLimit(0);	// TODO check this out if it works when setting higher screen image
 		mPager.setAdapter(mAdapter);
@@ -84,39 +86,36 @@ public class IntroductionActivity extends FragmentActivity {
 	public static class MyAdapter extends FragmentPagerAdapter {
 		public MyAdapter(FragmentManager fm) {
 			super(fm);
-      Log.d("Test", "hell1o");
 		}
 
 		@Override
 		public int getCount() {
-			return 10;
+			return 6;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-      Log.d("Test", "he2llo");
-
 			switch (position) {
 			case 0:
-				return new ImageFragment(0);
+				return new ImageFragment(0, context);
 			case 1:
-				return new ImageFragment(1);
+				return new ImageFragment(1, context);
 			case 2:
-				return new ImageFragment(2);
+				return new ImageFragment(2, context);
 			case 3:
-				return new ImageFragment(3);
+				return new ImageFragment(3, context);
 			case 4:
-				return new ImageFragment(4);
+				return new ImageFragment(4, context);
 			case 5:
-				return new ImageFragment(5);
-			case 6:
-				return new ImageFragment(6);
-			case 7:
-				return new ImageFragment(7);
-			case 8:
-				return new ImageFragment(8);
-			case 9:
-				return new ImageFragment(9);
+				return new ImageFragment(5, context);
+//			case 6:
+//				return new ImageFragment(6);
+//			case 7:
+//				return new ImageFragment(7);
+//			case 8:
+//				return new ImageFragment(8);
+//			case 9:
+//				return new ImageFragment(9);
 			default:
 				return null;
 			}

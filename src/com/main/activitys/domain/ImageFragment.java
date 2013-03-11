@@ -3,19 +3,27 @@
  */
 package com.main.activitys.domain;
 import com.main.*;
+import com.main.activitys.IntroductionActivity;
+import com.main.activitys.TryOutGame;
+
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class ImageFragment extends Fragment {
 	private final int id;
-
-	public ImageFragment(int id){
+	static Context ctx;
+	public ImageFragment(int id, Context context){
 		this.id = id;
+		this.ctx = context;
 	}
 
 	@Override
@@ -62,30 +70,40 @@ public class ImageFragment extends Fragment {
 			imageView.setImageResource(R.drawable.intro__fifth);
 			return view;
 		case 5:
-			view = inflater.inflate(R.layout.fragment_image, container, false);
-			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
-			imageView.setImageResource(R.drawable.intro__sixth);
+			view = inflater.inflate(R.layout.fragment_textview, container, false);
+			Button button = (Button) view.findViewById(R.id.fragmentButton);
+			button.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent().setClass(getActivity().getBaseContext(), TryOutGame.class);
+					startActivity(intent);
+					IntroductionActivity act = (IntroductionActivity) ctx;
+					act.finish();
+
+				}
+			});
 			return view;
-		case 6:
-			view = inflater.inflate(R.layout.fragment_image, container, false);
-			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
-			imageView.setImageResource(R.drawable.intro__seventh);
-			return view;
-		case 7:
-			view = inflater.inflate(R.layout.fragment_image, container, false);
-			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
-			imageView.setImageResource(R.drawable.intro__eight);
-			return view;
-		case 8:
-			view = inflater.inflate(R.layout.fragment_image, container, false);
-			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
-			imageView.setImageResource(R.drawable.intro__nineth);
-			return view;
-		case 9:
-			view = inflater.inflate(R.layout.fragment_image, container, false);
-			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
-			imageView.setImageResource(R.drawable.intro__tenth);
-			return view;
+//		case 6:
+//			view = inflater.inflate(R.layout.fragment_image, container, false);
+//			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
+//			imageView.setImageResource(R.drawable.intro__seventh);
+//			return view;
+//		case 7:
+//			view = inflater.inflate(R.layout.fragment_image, container, false);
+//			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
+//			imageView.setImageResource(R.drawable.intro__eight);
+//			return view;
+//		case 8:
+//			view = inflater.inflate(R.layout.fragment_image, container, false);
+//			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
+//			imageView.setImageResource(R.drawable.intro__nineth);
+//			return view;
+//		case 9:
+//			view = inflater.inflate(R.layout.fragment_image, container, false);
+//			imageView = (ImageView) view.findViewById(R.id.imageViewIntro);
+//			imageView.setImageResource(R.drawable.intro__tenth);
+//			return view;
 		default:
 			return view;
 

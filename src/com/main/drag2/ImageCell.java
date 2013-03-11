@@ -102,11 +102,6 @@ implements DragSource, DropTarget
 			
 			// TODO if test er lagt til for å ikke få lov til å drage kort når det bare er ett
 			if(mCellNumber == TryOutGame.cellTakenFrom && !TryOutGame.hasOpenCardParent(mCellNumber) && TryOutGame.cellTakenFrom != -1){
-				counterPressed ++;
-				if(counterPressed == 5){
-					counterPressed = 0;
-					new Alert("Notice", "You can't move this card. There is only one card left in the pile", TryOutGame);
-				}
 				return false;
 			}
 			Log.d("allowDrag", "is draggable");

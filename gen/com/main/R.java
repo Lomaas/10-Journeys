@@ -316,7 +316,6 @@ containing a value of this type.
         public static final int connection_name=0x7f0b0010;
         public static final int connections_list=0x7f0b001c;
         public static final int delete_post_button=0x7f0b00af;
-        public static final int detailsText=0x7f0b0048;
         public static final int drag_layer=0x7f0b0052;
         public static final int ePassword=0x7f0b007c;
         public static final int eTextLoginUsername=0x7f0b007b;
@@ -332,6 +331,7 @@ containing a value of this type.
         public static final int fields_list=0x7f0b001b;
         public static final int fqlOutput=0x7f0b003e;
         public static final int fqlquery=0x7f0b003b;
+        public static final int fragmentButton=0x7f0b0048;
         public static final int friend_item=0x7f0b0049;
         public static final int friend_permissions_list=0x7f0b0095;
         public static final int gameRowLastAction=0x7f0b0060;

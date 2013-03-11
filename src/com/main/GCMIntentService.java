@@ -27,6 +27,7 @@ import com.google.android.gcm.GCMBaseIntentService;
 import com.main.activitys.AllGamesActivity;
 import com.main.activitys.domain.Extrainfo;
 import com.main.activitys.domain.Login;
+import com.main.helper.CommonFunctions;
 import com.main.helper.DbAdapter;
 
 /**
@@ -146,6 +147,9 @@ public class GCMIntentService extends GCMBaseIntentService{
 				adapter.insertNewGameRequest(Integer.parseInt(extras.getString("opponentId")), extras.getString("type"), extras.getString("opponent"));
 				adapter.close();
 			}
+			else if(extras.containsKey("cardDeckReset")){
+				CommonFunctions.setGameInfo(Integer.parseInt(extras.getString("gameId")), "The card deck has been reset", arg0);
+			}
 		}
 		else {
 			// IF app is screened show popup msg
@@ -181,6 +185,9 @@ public class GCMIntentService extends GCMBaseIntentService{
 			}
 			else if(extras.containsKey("tryedToValidateRoute")){
 				sendGCMIntent(arg0, "tryedToValidateRoute", "yes", "cards", extras.getString("cards"), null, null);
+			}
+			else if(extras.containsKey("cardDeckReset")){
+				sendGCMIntent(arg0, "cardDeckReset", "", "gameId", extras.getString("gameId"), null, null);
 			}
 		}
 	}

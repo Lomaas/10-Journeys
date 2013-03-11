@@ -223,7 +223,6 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 		extraInfo = getSharedPreferences(Extrainfo.PREFS_NAME, 0);
 		
-		
 		extraInfoText = (TextView)findViewById(R.id.extraInformationText);
 
 		userId = Login.getUserId(loginSettings);
@@ -238,7 +237,7 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 
 		try {
 			STATE = GameActivity.INIT;
-			String action = "Place your 10 start up cards. Press Next Card to get the first card";
+			String action = "Start with placing your 10 start up cards. Press Next Card to get your first card";
 			TextView lastAction = (TextView) findViewById(R.id.lastAction);
 			lastAction.setText(action);
 
@@ -532,6 +531,33 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 			//extraInfoText.setVisibility(View.VISIBLE);
 			return;
 		}
+		if(cardDeckIndex == 3){
+			addOpenCardToScreen(cardId);
+			TextView view = (TextView)findViewById(R.id.lastAction);
+			view.setText("Continue until all 10 cards have been placed. A card that is already placed can't be replaced until the next phase of the game");
+			view.setBackgroundColor(getResources().getColor(R.color.darktrans));
+			view.setTextColor(getResources().getColor(R.color.white));
+
+			return;
+		}
+		if(cardDeckIndex == 4){
+			addOpenCardToScreen(cardId);
+			TextView view = (TextView)findViewById(R.id.lastAction);
+			view.setText("Tip: A good start is crucial for being competitive in the next phase. Be tactical in your placement of your cards");
+			view.setBackgroundResource(R.drawable.test);
+			view.setTextColor(getResources().getColor(R.color.black));
+
+			return;
+		}
+		if(cardDeckIndex == 5){
+			addOpenCardToScreen(cardId);
+			TextView view = (TextView)findViewById(R.id.lastAction);
+			view.setText("Notice there is two railroads on the map; one in northern Africa and one in central Europe");
+			view.setBackgroundColor(getResources().getColor(R.color.darktrans));
+			view.setTextColor(getResources().getColor(R.color.white));
+
+			return;
+		}
 		else{
 			TextView view = (TextView)findViewById(R.id.lastAction);
 			view.setBackgroundColor(getResources().getColor(R.color.darktrans));
@@ -573,7 +599,7 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 					openCardParents,
 					cardId, 
 					INIT, 
-					"Place your 10 start up cards. Press Next Card to get the next card",
+					"Continue until all 10 cards have been placed.",
 					userId
 					);
 		}
@@ -984,7 +1010,19 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 			viewEndButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					new Alert("Notice", "In a real game this will end your game if your route is correct, or tell you which part that failed", context);
+					new AlertDialog.Builder(context)
+					.setTitle("Notice")
+					.setMessage("In a real game this will end your game if your route is correct, or tell you which part that failed. End tutorial?")
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							finish();
+						}
+					}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							
+						}
+					}).show();
+				
 				}
 			});
 

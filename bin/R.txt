@@ -270,7 +270,6 @@ int id chatIcon 0x7f0b005d
 int id connection_name 0x7f0b0010
 int id connections_list 0x7f0b001c
 int id delete_post_button 0x7f0b00af
-int id detailsText 0x7f0b0048
 int id drag_layer 0x7f0b0052
 int id ePassword 0x7f0b007c
 int id eTextLoginUsername 0x7f0b007b
@@ -286,6 +285,7 @@ int id fields_layout 0x7f0b0019
 int id fields_list 0x7f0b001b
 int id fqlOutput 0x7f0b003e
 int id fqlquery 0x7f0b003b
+int id fragmentButton 0x7f0b0048
 int id friend_item 0x7f0b0049
 int id friend_permissions_list 0x7f0b0095
 int id gameRowLastAction 0x7f0b0060

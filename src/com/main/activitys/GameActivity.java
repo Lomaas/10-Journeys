@@ -205,7 +205,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 
 			if(STATE == GameActivity.INIT && extras.getInt("openCard") >= 0){
 				Log.d("onCreate", "its init and openCard is open");
-				toast("its init turn state");
 
 				if(extras.getInt("openCard") > 0){
 					addOpenCardToScreen(extras.getInt("openCard"));

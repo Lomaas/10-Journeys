@@ -37,18 +37,13 @@ import com.main.activitys.AllGamesActivity;
 import com.main.activitys.ChatActivity;
 import com.main.activitys.GameActivity;
 import com.main.activitys.GameFinishActivity;
-import com.main.activitys.GetAddedFriendsActivity;
 import com.main.activitys.NewGameActivity;
 import com.main.activitys.domain.Extrainfo;
 import com.main.activitys.domain.Login;
 import com.main.activitys.domain.Message;
 import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
 
-/**
- * @author Simen
- *
- */
+
 public class CommonFunctions {
 	public static String START_GAME_URL = "http://restfulserver.herokuapp.com/game/respond_to_game_request";
 	public static int FROM_STANDARD_ACTIVITY = 1;
@@ -376,7 +371,8 @@ public class CommonFunctions {
 			public void onReceive(Context context, Intent intent) {
 				Log.i("onReceive", "broadcast");
 				Bundle extras = intent.getExtras();
-
+				boolean shouldSetGameInfo = true;
+				
 				if(fromActivity == CommonFunctions.FROM_STANDARD_ACTIVITY){
 					if(extras.containsKey("newChatMsg")){
 						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
@@ -410,6 +406,7 @@ public class CommonFunctions {
 							Log.i("cardeckReset", "reset");
 						}
 						else {
+							shouldSetGameInfo = false;
 							CommonFunctions.setGameInfo(Integer.parseInt(extras.getString("gameId")), "The card deck has been reset", context);
 						}
 					}
@@ -456,6 +453,11 @@ public class CommonFunctions {
 					else
 						new Alert("Decline",extras.getString("opponent") + " declined your game request", context);
 				}
+				else if(extras.containsKey("cardDeckReset")){
+					if(shouldSetGameInfo == true){
+						CommonFunctions.setGameInfo(Integer.parseInt(extras.getString("gameId")), "The card deck has been reset", context);
+					}
+				}
 			}
 		};
 	}
@@ -469,12 +471,15 @@ public class CommonFunctions {
 	public static void getGameInfo(int gameId, Context ctx){
 		DbAdapter adapter = new DbAdapter(ctx);
 		adapter.open();
-		CommonFunctions.setGameInfo(gameId, "This is a test", ctx);
 
 		Cursor cursor = adapter.fetchAllGameInfo(gameId);
 		
 		for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
 			Log.i("gameInfo", cursor.getString(0));
+			if(cursor.getInt(0) == gameId){
+				new Alert("Card deck reset", "The card deck has been reset", ctx);
+				adapter.deleteGameInfo(gameId);
+			}
 		}
 	}
 	
@@ -520,7 +525,7 @@ public class CommonFunctions {
 
 		} else {
 			Log.i("GCM", "Already registered");	
-			Toast.makeText(ctx, "already registered", Toast.LENGTH_LONG).show();
+			//Toast.makeText(ctx, "already registered", Toast.LENGTH_LONG).show();
 		}
 		postRegId(ctx, loginSettings);
 		
@@ -536,11 +541,11 @@ public class CommonFunctions {
 				try {
 					JSONObject obj = new JSONObject(message);
 					if(obj.has("registred")){
-						Toast.makeText(context, "Registered", Toast.LENGTH_LONG).show();
+						//Toast.makeText(context, "Registered", Toast.LENGTH_LONG).show();
 						Login.setIsReggedPush(loginSettings);
 					}
 					else {
-						Toast.makeText(context, "Retrys regId", Toast.LENGTH_LONG).show();
+						//Toast.makeText(context, "Retrys regId", Toast.LENGTH_LONG).show();
 						try {
 							Thread.sleep(10000);
 						}
