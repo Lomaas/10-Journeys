@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.main"
+    package="com.saimenstravelapp"
     android:installLocation="preferExternal"
-    android:versionCode="1"
+    android:versionCode="6"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -15,35 +15,31 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    
-    <permission
-        android:name="com.main.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="com.main.permission.C2D_MESSAGE" />
-    <!-- App receives GCM messages. -->
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <!-- GCM requires a Google account. -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <!-- Keeps the processor from sleeping when a message is received. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.saimenstravelapp.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.saimenstravelapp.GET_ACCOUNTS" />
+
+    <permission
+        android:name="com.saimenstravelapp.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
 
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <service
-            android:name="com.main.service.TimerService"
+            android:name="com.saimenstravelapp.service.TimerService"
             android:enabled="true" >
             <intent-filter>
-                <action android:name="com.main.service.TimerService" >
+                <action android:name="com.saimenstravelapp.service.TimerService" >
                 </action>
             </intent-filter>
         </service>
 
-      <activity
+        <activity
             android:name="com.revmob.ads.fullscreen.FullscreenActivity"
             android:configChanges="keyboardHidden|orientation" >
-    </activity>
+        </activity>
 
         <receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
@@ -52,16 +48,19 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="com.main" />
+                <category android:name="com.saimenstravelapp" />
             </intent-filter>
         </receiver>
 
         <service android:name=".GCMIntentService" />
 
+        <activity
+            android:name="com.google.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
         <activity android:name=".DragableActivity" >
         </activity>
         <activity
-            android:name="com.main.activitys.LoginActivity"
+            android:name="com.saimenstravelapp.activitys.LoginActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -70,88 +69,85 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.main.activitys.RegisterActivity"
+            android:name="com.saimenstravelapp.activitys.RegisterActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.GameFinishActivity"
+            android:name="com.saimenstravelapp.activitys.GameFinishActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.SelectProfileActivity"
+            android:name="com.saimenstravelapp.activitys.SelectProfileActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.TestActivity"
+            android:name="com.saimenstravelapp.activitys.TestActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.AllGamesActivity"
+            android:name="com.saimenstravelapp.activitys.AllGamesActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.NewGameActivity"
+            android:name="com.saimenstravelapp.activitys.NewGameActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.GameActivity"
+            android:name="com.saimenstravelapp.activitys.GameActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.SettingsActivity"
+            android:name="com.saimenstravelapp.activitys.SettingsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.FindFriendActivity"
+            android:name="com.saimenstravelapp.activitys.FindFriendActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.InviteFriendTabActivity"
+            android:name="com.saimenstravelapp.activitys.InviteFriendTabActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.GetRecentPlayersActivity"
+            android:name="com.saimenstravelapp.activitys.GetRecentPlayersActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.GetAddedFriendsActivity"
+            android:name="com.saimenstravelapp.activitys.GetAddedFriendsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.GetContactActivity"
+            android:name="com.saimenstravelapp.activitys.GetContactActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.HighscoreActivity"
+            android:name="com.saimenstravelapp.activitys.HighscoreActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.SeeCardStockActivity"
+            android:name="com.saimenstravelapp.activitys.SeeCardStockActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.OpponentStatsActivity"
+            android:name="com.saimenstravelapp.activitys.OpponentStatsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.ChatActivity"
+            android:name="com.saimenstravelapp.activitys.ChatActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.FullRuleset"
+            android:name="com.saimenstravelapp.activitys.FullRuleset"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.TryOutGame"
+            android:name="com.saimenstravelapp.activitys.IntroductionActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.main.activitys.IntroductionActivity"
+            android:name="com.saimenstravelapp.activitys.TryOutGame"
             android:screenOrientation="portrait" >
         </activity>
-        <activity
-            android:name="com.google.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
     </application>
 
 </manifest>

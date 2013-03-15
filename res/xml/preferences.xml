@@ -35,8 +35,8 @@
     <PreferenceCategory android:title="Card decks" >
         <Preference
             android:key="seeCardStock"
-            android:summary="See the card deck for europe"
-            android:title="Europe" >
+            android:summary="See the whole card deck for Europe/Africa"
+            android:title="Europe/Africa" >
         </Preference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Other" >

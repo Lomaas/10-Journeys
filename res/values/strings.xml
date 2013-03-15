@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">10 Journeys</string>
+    <string name="app_name">Globetrotting</string>
     <string name="register">Register</string>
     <string name="signin">Sign in</string>
     <string name="sendAppRequest">Join me on my journey</string>

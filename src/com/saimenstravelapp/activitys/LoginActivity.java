@@ -1,0 +1,195 @@
+/**
+ * 
+ */
+package com.saimenstravelapp.activitys;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.saimenstravelapp.*;
+import com.saimenstravelapp.activitys.domain.Login;
+import com.saimenstravelapp.helper.*;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
+import async.httprequest.AsynchronousHttpClient;
+import async.httprequest.ResponseListener;
+
+/**
+ * The Class LoginActivity. Main class for logging in
+ * to become a user. Logging means that other users 
+ * can see that you are at the event.
+ */
+public class LoginActivity extends Activity {
+//	Facebook facebook = new Facebook("271971842906436");
+//	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
+
+	private String loginUrl = "http://restfulserver.herokuapp.com/user/login";
+
+	String pword = null;
+	private TextView username;
+	private TextView password;
+	private ProgressDialogClass progDialog;
+	private ResponseListener responseListener;
+	public SharedPreferences loginSettings;
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.login);
+
+		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
+		Bundle extras = getIntent().getExtras();
+		username = (TextView) findViewById(R.id.eTextLoginUsername);
+		password = (TextView) findViewById(R.id.ePassword);
+
+		Log.d("password", Login.getPassword(loginSettings));
+
+		responseListener = new ResponseListener() {
+			@Override
+			public void onResponseReceived(HttpResponse response, String message) {
+				Log.i("Response", response.toString());
+				progDialog.dissMissProgressDialog();
+				confirmLogin(message);
+			}
+		};				
+
+		if(extras != null && extras.containsKey("fromAllGamesActivity")){
+			String tmpUsername = Login.getUsername(loginSettings);
+			String tmpPassword = Login.getPassword(loginSettings);
+			username.setText(tmpUsername);
+			password.setText(tmpPassword);
+			postLoginInfo(tmpUsername, tmpPassword);
+			return;
+		}
+		
+		// if not session expired login!
+		if(!Login.isSessionExpired(loginSettings) ){
+			Log.i("sessionNOtExpired", "not expired");
+			Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
+			startActivity(allGamesActivity);
+			finish();			// can't return to this activity when signed in
+			return;
+		}
+		
+
+		/* Post loginInfo if registered */
+		if(Login.isRegistered(loginSettings)){
+			Log.i("isRegistered", "just posts info");
+			String tmpUsername = Login.getUsername(loginSettings);
+			String tmpPassword = Login.getPassword(loginSettings);
+			username.setText(tmpUsername);
+			password.setText(tmpPassword);
+			postLoginInfo(tmpUsername, tmpPassword);
+		}
+		else if(extras != null && extras.getBoolean("fromReg")){
+			Log.d("fromReg", "fromReg");
+		}
+		else{
+			Intent i = new Intent().setClass(this, RegisterActivity.class);
+			startActivity(i);
+			finish();
+		}
+	}
+
+	public void evaluateLoginInfo(View v){
+		if(username.getText().length() > 0 && password.getText().length() > 0){
+			postLoginInfo(username.getText().toString(), password.getText().toString());
+		}
+		else {
+			new Alert("Error", 
+					"The username/password field has to be filled out", 
+					LoginActivity.this);
+		}
+	}
+
+	public void toRegisterActivity(View v){
+		Intent registerAct = new Intent().setClass(this, RegisterActivity.class);
+		startActivity(registerAct);
+		finish();
+	}
+
+	public void postLoginInfo(String uname, String pw){
+		progDialog = new 
+				ProgressDialogClass(this, 
+						"Signing in", 
+						"Verifying, please wait...",
+						15000);
+
+		progDialog.run();
+
+		HttpPost httpPost = null;
+
+		try {
+			JSONObject registerInfo = new JSONObject();
+
+			httpPost = new HttpPost(new URI(loginUrl));
+
+			registerInfo.put("Username", uname);
+			registerInfo.put("Password", pw);
+
+			pword = pw;
+
+			StringEntity se = new StringEntity(registerInfo.toString());
+			se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+
+			httpPost.setEntity(se);
+		}
+		catch (URISyntaxException e) { e.printStackTrace(); }
+		catch (JSONException e) { e.printStackTrace(); }
+		catch (UnsupportedEncodingException e) { e.printStackTrace(); }
+
+		AsynchronousHttpClient a = new AsynchronousHttpClient();
+		a.sendRequest(httpPost, responseListener, loginSettings);
+	}
+
+	public void confirmLogin(String responseBody){
+		Log.i("ConfirmLogin", responseBody);
+
+		JSONObject response = null;
+
+		try {
+			response = new JSONObject(responseBody);
+
+			if(response.has("UID")){
+				Login.setUserId(loginSettings, response.getInt("UID"));
+				Login.setLoggedInRightNow(loginSettings);
+
+				Login.storeUsername(loginSettings, response.getString("Username"));
+				Login.setEmail(loginSettings, response.getString("Email"));
+				Login.storePassword(loginSettings, pword);
+				Login.setRegistered(loginSettings);
+
+				Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
+				startActivity(allGamesActivity);
+				finish();			// can't return to this activity when signed in
+			}
+			else {
+				new Alert("Error",  response.getString("error"),this);
+			}
+		}
+		catch (JSONException e) { 
+			e.printStackTrace(); 
+			new Alert("Ups",  "An error occured, please try to log in again", this);
+
+		}
+
+
+	}
+}
