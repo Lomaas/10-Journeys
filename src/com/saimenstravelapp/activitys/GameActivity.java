@@ -762,7 +762,7 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 				this.setState(GameActivity.OPPONENTS_TURN);
 				setViewForOpponentsTurn(false);
 				Log.d("confirmPlay", "notYourTurn");
-				new Alert("Uups", "Something went wrong at the server. Not your turn", this);
+				new Alert("Uups", "Something went wrong. It was not your turn", this);
 				doPolling();
 				return;
 			}
@@ -1195,8 +1195,11 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			frameLayout.removeView(findViewById(R.id.buttonNextCard));
 		}
 
-		if(this.getState() == GameActivity.OPPONENTS_TURN && fromAllGames == false && this.getState() != previousState && polling == false)
-			revmob.showFullscreen(this);
+		if(this.getState() == GameActivity.OPPONENTS_TURN && fromAllGames == false && this.getState() != previousState && polling == false){
+			int num = (int) (Math.random() * 5);
+			if(num == 0)
+				revmob.showFullscreen(this);
+		}
 	}
 
 

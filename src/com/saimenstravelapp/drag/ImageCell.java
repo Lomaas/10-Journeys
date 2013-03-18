@@ -38,7 +38,6 @@ implements DragSource, DropTarget
 	public int fromGridId;
 	public boolean draggable = true;
 	public boolean shouldBeOpenCard = false;
-	public int counterPressed = 0;
 
 	/**
 	 * Constructors
@@ -99,11 +98,6 @@ implements DragSource, DropTarget
 			
 			// TODO if test er lagt til for å ikke få lov til å drage kort når det bare er ett
 			if(mCellNumber == gameActivity.cellTakenFrom && !gameActivity.hasOpenCardParent(mCellNumber) && gameActivity.cellTakenFrom != -1){
-				counterPressed ++;
-				if(counterPressed == 5){
-					counterPressed = 0;
-					new Alert("Notice", "You can't move this card. There is only one card left in the pile", gameActivity);
-				}
 				return false;
 			}
 			Log.d("allowDrag", "is draggable");
