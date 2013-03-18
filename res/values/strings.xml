@@ -30,7 +30,6 @@
     <color name="lightgray">#F8F8F8</color>
 
     <string name="country_prompt">Choose a map</string>
-
     <string-array name="options_game">
         <item>Add opponent to friendslist</item>
         <item>Start new game w/opponent</item>

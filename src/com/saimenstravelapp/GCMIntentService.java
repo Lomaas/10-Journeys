@@ -24,7 +24,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ActivityManager;
 import com.google.android.gcm.GCMBaseIntentService;
-import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.AllGamesActivity;
 import com.saimenstravelapp.activitys.domain.Extrainfo;
 import com.saimenstravelapp.activitys.domain.Login;

@@ -65,7 +65,7 @@
             android:layout_alignLeft="@+id/textHeader"
             android:layout_below="@+id/textHeader"
             android:layout_marginTop="3dp"
-            android:text="Invite a 10 journey friend"
+            android:text="Invite a Globetrotting friend"
             android:textColor="@color/white"
             android:textSize="13dip" />
     </RelativeLayout>
