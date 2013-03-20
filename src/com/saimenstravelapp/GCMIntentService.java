@@ -215,7 +215,7 @@ public class GCMIntentService extends GCMBaseIntentService{
 		notification.setLatestEventInfo(ctx,
 				getResources().getString(R.string.app_name), mainText,
 				PendingIntent.getActivity(this.getBaseContext(), 0, notificationIntent,
-						PendingIntent.FLAG_CANCEL_CURRENT));
+						PendingIntent.FLAG_UPDATE_CURRENT));
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.defaults = Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE;
 		mManager.notify(APP_ID, notification);

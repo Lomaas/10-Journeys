@@ -432,7 +432,11 @@ public class GameFinishActivity extends Activity{
 				// Add The Text!!!
 				int journeyDay = position + 1;
 				TextView tv = (TextView)MyView.findViewById(R.id.grid_item_text);
-				tv.setText("Journey "+ journeyDay);
+				String journey = "Journey ";
+				if(position == 9)
+					journey = "Jour. ";
+				
+				tv.setText(journey + journeyDay);
 			}
 
 			return MyView;
