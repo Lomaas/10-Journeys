@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-import com.saimenstravelapp.R;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.GameActivity;
 import com.saimenstravelapp.activitys.domain.GameGUI;
 
@@ -89,11 +89,9 @@ public class ImageCellAdapter extends BaseAdapter
 			}
 			v.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 			v.setLayoutParams(new GridView.LayoutParams(params));
-//			Log.d("convertView", "convertView null");
 		} 
 		else {
 			v = (ImageCell) convertView;
-//			Log.d("convertView", Integer.toString(v.getDrawableId()));
 		}
 		v.mCellNumber = position; 
 		v.mGrid = (GridView) mParentView;

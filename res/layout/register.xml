@@ -16,21 +16,13 @@
         android:textColor="@color/white" />
 
     <TextView
-        android:id="@+id/regEmailView"
+        android:id="@+id/regInformation"
         style="@style/ButtonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="Email:"
+        android:layout_margin="15dp"
+        android:text="To be able to play you must registrate"
         android:textColor="@color/white" />
-
-    <EditText
-        android:id="@+id/eTextRegEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Enter your email"
-        android:inputType="textEmailAddress" >
-    </EditText>
 
     <TextView
         android:id="@+id/textRegUsername"
@@ -45,6 +37,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="Enter your name" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/regEmailView"
+        style="@style/ButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Email (optional):"
+        android:textColor="@color/white" />
+
+    <EditText
+        android:id="@+id/eTextRegEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter your email"
+        android:inputType="textEmailAddress" >
     </EditText>
 
     <Button

@@ -3,17 +3,14 @@ package com.saimenstravelapp.service;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore; 
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.cookie.Cookie;
 
@@ -23,9 +20,7 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
 import com.saimenstravelapp.activitys.domain.Login;
@@ -69,7 +64,6 @@ public class TimerService extends Service {
 		responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.d("SERVICE - MESSAGE RESPONSE", message);
 				callBackIntent.putExtra("data", message);
 				sendBroadcast(callBackIntent);
 			}
@@ -110,7 +104,7 @@ public class TimerService extends Service {
 	}
 
 	private void pollServer(){
-		Log.d("SERVICE", "Polling the server - url: " + gamesUrl);
+		Log.d("SERVICE", "Polling the server");
 		try {
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpGet httpGet;
@@ -131,9 +125,7 @@ public class TimerService extends Service {
           	Login.storeSessionId(loginSettings, sessionId);
       }
     	
-			
 			String message = AsynchronousSender.readResponse(response);
-			
 			callBackIntent.putExtra("data", message);
 			sendBroadcast(callBackIntent);
 		}

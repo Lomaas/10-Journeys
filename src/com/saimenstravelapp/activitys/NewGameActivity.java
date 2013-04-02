@@ -9,6 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.saimenstravelapp.*;
+import com.saimenstravelapp.activitys.domain.Login;
+import com.saimenstravelapp.helper.Alert;
+import com.saimenstravelapp.helper.BuildHttpRequest;
+import com.saimenstravelapp.helper.CommonFunctions;
+import com.saimenstravelapp.helper.ProgressDialogClass;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 
@@ -25,13 +30,6 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import com.markupartist.android.widget.ActionBar.IntentAction;
-import com.saimenstravelapp.activitys.domain.Login;
-import com.saimenstravelapp.helper.Alert;
-import com.saimenstravelapp.helper.BuildHttpRequest;
-import com.saimenstravelapp.helper.CommonFunctions;
-import com.saimenstravelapp.helper.DbAdapter;
-import com.saimenstravelapp.helper.ProgressDialogClass;
 
 import android.widget.EditText;
 import async.httprequest.AsynchronousHttpClient;

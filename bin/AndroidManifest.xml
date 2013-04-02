@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.saimenstravelapp"
     android:installLocation="preferExternal"
-    android:versionCode="8"
+    android:versionCode="10"
     android:versionName="1.1" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="16" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -35,6 +35,7 @@
                 </action>
             </intent-filter>
         </service>
+        <service android:name=".GCMIntentService" />
 
         <activity
             android:name="com.revmob.ads.fullscreen.FullscreenActivity"
@@ -52,13 +53,10 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".GCMIntentService" />
-
         <activity
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
-        <activity android:name=".DragableActivity" >
-        </activity>
+        
         <activity
             android:name="com.saimenstravelapp.activitys.LoginActivity"
             android:screenOrientation="portrait" >
@@ -78,10 +76,6 @@
         </activity>
         <activity
             android:name="com.saimenstravelapp.activitys.SelectProfileActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="com.saimenstravelapp.activitys.TestActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -142,11 +136,11 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.saimenstravelapp.activitys.IntroductionActivity"
+            android:name="com.saimenstravelapp.activitys.TryOutGame"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.saimenstravelapp.activitys.TryOutGame"
+            android:name="com.saimenstravelapp.activitys.IntroductionActivity"
             android:screenOrientation="portrait" >
         </activity>
     </application>

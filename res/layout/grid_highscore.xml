@@ -43,4 +43,25 @@
         android:stretchMode="columnWidth" >
     </GridView>
 
+    <TextView
+        android:id="@+id/textHigestScores"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingTop="20dp"
+        android:text="Highest score"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/white" />
+
+    <GridView
+        android:id="@+id/highscoreGridScores"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:numColumns="4"
+        android:stretchMode="columnWidth" >
+    </GridView>
 </LinearLayout>

@@ -8,7 +8,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.saimenstravelapp.R;
+
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.Contact;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.helper.*;

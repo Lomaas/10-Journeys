@@ -16,10 +16,7 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.saimenstravelapp.R;
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.revmob.RevMob;
+
 import com.saimenstravelapp.activitys.domain.Extrainfo;
 import com.saimenstravelapp.activitys.domain.Game;
 import com.saimenstravelapp.activitys.domain.GameGUI;
@@ -35,6 +32,11 @@ import com.saimenstravelapp.helper.Constants;
 import com.saimenstravelapp.helper.ProgressDialogClass;
 import com.saimenstravelapp.service.AsyncTaskDelegate;
 import com.saimenstravelapp.service.TimerService;
+import com.markupartist.android.widget.ActionBar;
+import com.saimenstravelapp.*;
+import com.markupartist.android.widget.ActionBar.Action;
+import com.revmob.RevMob;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -147,7 +149,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 
 		context = this;
 		serviceintent = new Intent("com.saimenstravelapp.service.TimerService");
-		Log.d("GameActivity onCreate", "oncreate");
 
 		WebView webView = (WebView)findViewById(R.id.mainMap);
 		webView.setBackgroundColor(getResources().getColor(R.color.grid_background));
@@ -171,7 +172,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.d("Response", response.toString());
 				progDialog.dissMissProgressDialog();
 				confirmPlay(message);
 			}
@@ -180,12 +180,11 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		responseForNextCard = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.d("Response", response.toString());
 				progDialog.dissMissProgressDialog();
 				evaluateResponseForNextCard(message);
 			}
 		};
-		// Starting RevMob session
+//		// Starting RevMob session
 		revmob = RevMob.start(this, APPLICATION_ID);
 
 		try {
@@ -194,7 +193,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			last_updated = extras.getString("last_updated");
 
 			if(STATE == GameActivity.YOUR_TURN){
-				Log.d("dynamicaddNew View", "stock buttion");
 				addCardsOnTableAndCardStockButton();
 
 				if(action.equals("The game is on"))
@@ -202,20 +200,13 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			}
 
 			if(STATE == GameActivity.INIT && extras.getInt("openCard") >= 0){
-				Log.d("onCreate", "its init and openCard is open");
-
 				if(extras.getInt("openCard") > 0){
 					addOpenCardToScreen(extras.getInt("openCard"));
-					//					if(isLastCardInInitPhase(new JSONArray(extras.getString("YOUR_CARDS")))){
-					//						changeCardDeckButtonForNextPhase();
-					//					}
 				}
 
 				// Set cards on table grid unVisible
 				GridView openCardsGridView = (GridView) findViewById(R.id.gridForCardsOnTable);
 				openCardsGridView.setVisibility(View.GONE);
-				//				Button button = (Button) findViewById(R.id.buttonPlay);
-				//				button.setVisibility(View.GONE);
 			}
 			else if(STATE == GameActivity.OPPONENTS_TURN){
 				setViewForOpponentsTurn(true);
@@ -249,20 +240,13 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			openCardGui.add(openCards.get(2));
 
 			setGraphicalInterface(gameGUIS, openCardGui);
-			Log.d("playersTurn ONCREATE", Integer.toString(extras.getInt("playersTurn")));
 
 			updateGameObject(gameId, extras.getString("action"), extras.getInt("openCard"), tmpOpenCards, extras.getString("opponent"), 
 					extras.getInt("STATE"), last_updated, tmpYourCards, extras.getInt("playersTurn"), extras.getInt("type"), extras.getInt("opponentId"), openCardParents,
 					extras.getString("date_created"), extras.getInt("image"));
 
-			if(Extrainfo.isNewChatMsg(extraInfo, Integer.toString(gameId))){
+			if(Extrainfo.isNewChatMsg(extraInfo, Integer.toString(gameId)))
 				setGotNewMessage();
-				Log.d("has new game activity", "has new chat msg");
-			}
-			else{
-				Log.d("no new chat msg", "has NO chat msg");
-
-			}
 		}
 		catch(JSONException e){
 			e.printStackTrace();
@@ -286,8 +270,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 
 	@Override
 	public void onBackPressed() {
-		Log.d("backpressed", "onBackPressed Called");
-
 		Intent returnIntent = new Intent();
 		JSONObject obj = new JSONObject();
 		int resultCode = Activity.RESULT_CANCELED;
@@ -559,13 +541,11 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		dropTarget.setBackgroundResource (bg);
 
 		if (d != null) {
-			Log.d("onDrop", "not null drawable");
 			dropTarget.setImageDrawable (d);
 		}
 	}
 
 	public void newCard(View v){
-		Log.d("newCard", "adding new Card");
 		if(this.getState() == GameActivity.INIT)			
 			playMove(null); // This is to update the sever with info.
 		else
@@ -573,11 +553,9 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	}
 
 	public void getNextCardInDeck(){
-		Log.d("getnextCardInDeck", "next card");
 		HttpGet httpGet = null;
 
 		try {
-			Log.d("SERVICE", "done reque111st");
 			int gameId = extras.getInt(SELECTED_GAME_ID);
 			String cardUrl = "http://restfulserver.herokuapp.com/cards/" + Integer.toString(gameId);
 
@@ -607,7 +585,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			if(cards.has("notYourTurn")){
 				this.setState(GameActivity.OPPONENTS_TURN);
 				setViewForOpponentsTurn(false);
-				Log.d("confirmPlay", "notYourTurn");
 				new Alert("Uups", "Something went wrong at the server. Not your turn", this);
 				doPolling();
 				return;
@@ -616,8 +593,8 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 				new Alert("Card deck reset", "The card deck has been reset", this);
 			
 			int cardId = cards.getInt("cardId");
-			Log.d("state", Integer.toString(this.getState()));
 			setAllButtonUnvisible();
+			gameObject.setOpenCard(cardId);
 			addNewImageToScreen(getDrawableIdFromCardId(cardId), (FrameLayout) findViewById(R.id.image_source_frame_main), cardId, 0);
 		}
 		catch(JSONException e){ e.printStackTrace(); }
@@ -653,7 +630,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 
 		try {
 			httpPost = new HttpPost(new URI(gameUrl));
-			Log.d("postUpdate", finalJsonResponse.toString());
 
 			se = new StringEntity(finalJsonResponse.toString());
 		}
@@ -691,22 +667,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 
 		for(GameGUI gameGui : gameGUIS) {
 			try {
-				//				Log.d("currentCardId", Integer.toString(gameGui.getCurrentCardId()));
-				//				Log.d("deletedCardId", Integer.toString(gameGui.getDeletedCardId()));
-
-				//				if(gameGui.isUpdated())	
-				//					Log.d("isUpdated", "is updated");
-				//				else
-				//					Log.d("Not updated!", "not updated");
-				//				if(gameGui.isDraggable())
-				//					Log.d("isDragable", "is draggable");
-				//				else
-				//					Log.d("Not dragable!", "not dragable");
-				//				if(gameGui.isSpecialCase())
-				//					Log.d("isSpecial", "is specialcase");
-				//				else
-				//					Log.d("Not special case!", "not special case");
-
 				tmpJobject = new JSONObject();
 
 				if(gameGUIS.size() != 3){
@@ -718,12 +678,10 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 						if(cellTakenFrom == gameGui.getIndex() && gameGui.getDeletedCardId() == 0){
 							tmpJobject.put("deletedCardId", gameGui.getCurrentCardId());
 							tmpJobject.put("currentCardId", 0);
-							//							Log.i("setsCURRENT 0", "SETS CURRENT 0");
 						}
 						else if(gameGui.isDraggable() && cellTakenFrom != gameGui.getIndex()){
 							tmpJobject.put("currentCardId", gameGui.getCurrentCardId());
 							tmpJobject.put("deletedCardId", 0);
-							//							Log.i("DRAGGABLE", "AND NOT INSERTED ON CELLTAKENFROM");
 						}
 						else {
 							//TODO disse testene er lagt til for å få kortstokk effekt - det som er i siste else er det som opprinnelig var her
@@ -754,14 +712,12 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	}
 
 	public void confirmPlay(String msg){
-		Log.d("confirmPlay", msg);
 		try {
 			JSONObject jResponse= new JSONObject(msg);
 			
 			if(jResponse.has("notYourTurn")){
 				this.setState(GameActivity.OPPONENTS_TURN);
 				setViewForOpponentsTurn(false);
-				Log.d("confirmPlay", "notYourTurn");
 				new Alert("Uups", "Something went wrong. It was not your turn", this);
 				doPolling();
 				return;
@@ -805,7 +761,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			else if(!isMyTurn(jResponse.getInt("playersTurn")) && this.getState() != GameActivity.INIT){
 				this.setState(GameActivity.OPPONENTS_TURN);
 				setViewForOpponentsTurn(false);
-				Log.d("confirmPlay", "sets new Play");
 
 				if(action.equals("The game is on"))
 					action += ". Waiting for " + gameObject.getOpponentsUsername().get(0) + " to make his/her move";
@@ -880,11 +835,8 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	public boolean isLastCardInInitPhase(ArrayList<GameGUI> gameGuiList){
 		int numZeros = 0;
 		for(int index=0; index < gameGuiList.size(); index++){
-			Log.d("currentCardId", Integer.toString((gameGuiList.get(index).getCurrentCardId())));
-
 			if(gameGuiList.get(index).getCurrentCardId() == 0){
 				numZeros++;
-				Log.d("numZEROS", Integer.toString(numZeros));
 			}
 		}
 
@@ -895,7 +847,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	}
 
 	public void setState(int s){
-		Log.d("STATE", "SETS NEW STATE-> " + Integer.toString(s));
 		this.previousState = this.STATE;
 		this.STATE = s;
 	}
@@ -905,8 +856,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	}
 
 	public void addNewImageToScreen (int resourceId, FrameLayout imageHolder, int cardId, int fromGridId){
-		Log.d("ADDNEWIMAGETO SCREEN", "START OF ADD NEW IMAGE TO SCREEN!!!!");
-
 		if(imageHolder == null)
 			imageHolder = (FrameLayout) findViewById (R.id.image_source_frame_main);
 
@@ -927,9 +876,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		newView.setFromGridId(fromGridId);
 		newView.setBackgroundResource(R.color.transparent);
 		newView.mGrid = (GridView) findViewById(R.id.gridForCardsOnTable);
-
-		Log.d("ADDNEWIMAGETO SCREEN", "kommer DU HIIIIIIIIT");
-		Log.d("resourceId", Integer.toString(resourceId));	
 
 		// Have this activity listen to touch and click events for the view.
 		newView.setOnClickListener(this);
@@ -1026,8 +972,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	}
 
 	private void postFinishedGame(){
-		Log.d("finish!", "user thinks his finish");
-
 		String finalJsonResponse = getStringResponse().toString();
 
 		HttpPost httpPost = null;
@@ -1038,7 +982,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 			String finishUrl = "http://restfulserver.herokuapp.com/finish/" + Integer.toString(gameId);
 
 			httpPost = new HttpPost(new URI(finishUrl));
-			Log.d("postUpdate", finalJsonResponse.toString());
 
 			se = new StringEntity(finalJsonResponse.toString());
 		}
@@ -1074,14 +1017,11 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 		finishIntent.putExtra("YOUR_CARDS", gameObject.getYourCards().toString());
 		finishIntent.putExtra("last_updated", "0");
 		finishIntent.putExtra("openCards", gameObject.getOpenCards().toString());
-		finishIntent.putExtra("gameId", gameId);
-
+		finishIntent.putExtra(GameActivity.SELECTED_GAME_ID, gameId);
 
 		finishIntent.setClass(this, GameFinishActivity.class);
-		//startActivity(finishIntent);
 		startActivity(finishIntent);
 
-		Log.i("gameIsFinish gameActivity", "are you here before returning?");
 		finish();
 	}
 
@@ -1256,7 +1196,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) 
 	{
 		ImageCell i = (ImageCell) v;
-		Log.d ("onItemClick in view", Integer.toString(i.mCellNumber));
 	}
 
 
@@ -1323,7 +1262,6 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 
 	public void trace (String msg) 
 	{
-		Log.d ("DragActivity", msg);
 		if (!Debugging) return;
 		toast (msg);
 	}

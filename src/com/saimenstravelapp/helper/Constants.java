@@ -16,7 +16,7 @@ package com.saimenstravelapp.helper;
 
 import java.util.Locale;
 
-import com.saimenstravelapp.R;
+import com.saimenstravelapp.*;
 
 public class Constants {
 

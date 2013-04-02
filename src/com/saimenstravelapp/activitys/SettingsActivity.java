@@ -19,7 +19,6 @@ import android.os.Looper;
 import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.helper.*;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -246,14 +245,8 @@ public class SettingsActivity extends PreferenceActivity {
 		ImageView profileImage = (ImageView)findViewById(R.id.preferecneimageview);
 		int profileId = Login.getProfileId(loginSettings);
 		if(profileImage != null){
-			Log.i("imageNotNulaaaaaal", "y");
 			profileImage.setImageResource(Constants.profileArray[profileId]);
 		}
-		else
-			Log.i("imageNullaaaaaaaa", "y");
-		Log.i("profile", Integer.toString(profileId));
-		
-
 	}
 
 	protected void onPause(){
@@ -264,7 +257,6 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 
 	public void evaluateResponse(String message){
-		Log.i("ConfirmLogin", message);
 		JSONObject response = null;
 
 		try {

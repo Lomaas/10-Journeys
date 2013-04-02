@@ -124,6 +124,5 @@
             android:numColumns="@integer/num_columns"
             android:stretchMode="columnWidth" >
         </GridView>
-    </RelativeLayout>
-
+    </RelativeLayout> 
 </com.saimenstravelapp.drag.DragLayer>

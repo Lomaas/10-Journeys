@@ -11,16 +11,17 @@ import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
 import com.markupartist.android.widget.ActionBar.IntentAction;
 import com.saimenstravelapp.*;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import com.saimenstravelapp.activitys.domain.Extrainfo;
 import com.saimenstravelapp.activitys.domain.Game;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.helper.*;
 import com.saimenstravelapp.service.TimerService;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -126,7 +127,6 @@ public class AllGamesActivity extends ListActivity {
 		giveUpListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.d("Response", response.toString());
 				startService();
 				evaluateResponse(message);
 			}
@@ -134,7 +134,6 @@ public class AllGamesActivity extends ListActivity {
 		startGameListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.d("Response", response.toString());
 				evaluateResponse(message);
 			}
 		};
@@ -164,15 +163,11 @@ public class AllGamesActivity extends ListActivity {
 		}
 	}
 
-
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		Log.i("oncreatecontextMenu", "inside here");
-		Log.i("ID", Integer.toString(v.getId()));
 
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		Log.i("ID", Integer.toString(info.position));
 
 		Game game = (Game) adapter.getItem(info.position);
 
@@ -247,7 +242,7 @@ public class AllGamesActivity extends ListActivity {
 		
 		startService();
 		CommonFunctions.findNewGameRequests(this, loginSettings);
-		
+
     AdView adView = (AdView)this.findViewById(R.id.adView);
     adView.loadAd(new AdRequest());
 	}
@@ -270,7 +265,7 @@ public class AllGamesActivity extends ListActivity {
 			try{
 				unregisterReceiver(broadcastReceiver);
 			}
-			catch(IllegalArgumentException e) { Log.i("IllegalArgumentException", "broadcastReceiver not regged"); }
+			catch(IllegalArgumentException e) { Log.d("IllegalArgumentException", "broadcastReceiver not regged"); }
 		
 			stopService(serviceintent);
 		}
@@ -299,7 +294,6 @@ public class AllGamesActivity extends ListActivity {
 			finishIntent.putExtra("action", game.getLastAction());
 			finishIntent.putExtra("opponent", game.getOpponentsUsername().get(0));
 			finishIntent.putExtra("type", game.getType());
-			Log.i("OPPONENTID", Integer.toString(game.getOpponentId()));
 			finishIntent.putExtra("opponentId", game.getOpponentId());
 			finishIntent.putExtra("last_updated", game.getTimeSinceLastMove());
 			finishIntent.putExtra("date_created", game.getDateCreated());
@@ -338,7 +332,7 @@ public class AllGamesActivity extends ListActivity {
 		if (requestCode == BACK_FROM_GAMER){
 			if(resultCode == RESULT_OK){
 				String result= data.getStringExtra("gameInfo");
-
+				Log.d("reslt from gameactiviy", result);
 				try {
 					JSONObject gameData = new JSONObject(result);
 					createGameObjAndAddToView(gameData, true);
@@ -346,12 +340,6 @@ public class AllGamesActivity extends ListActivity {
 				catch(JSONException e) { e.printStackTrace(); }
 			}
 		}
-	}
-	
-	
-	public void startTest(View v){
-		Intent i = new Intent().setClass(this, TestActivity.class);
-		startActivity(i);
 	}
 
 	/* Removes a game from finished game list */
@@ -493,7 +481,6 @@ public class AllGamesActivity extends ListActivity {
 	
 
 				if(obj.getInt("openCard") < 0){
-					Log.d("sets state", "opponents turn");
 					game.setState(GameActivity.OPPONENTS_TURN);
 					game.setLastAction("Waiting for " + obj.getString("opponent") + " to finish start up");
 				}
@@ -531,7 +518,6 @@ public class AllGamesActivity extends ListActivity {
 		adapter.removeSection(finishedTurnListSection);
 
 		if(!mineTurnList.isEmpty()){
-			Log.d("size", Integer.toString(mineTurnList.size()));
 			adapter.addSection(yourTurnListSection, new GameAdapter (this, android.R.layout.activity_list_item, mineTurnList));
 		}
 		if(!opponentTurnList.isEmpty()){
@@ -573,7 +559,6 @@ public class AllGamesActivity extends ListActivity {
 			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
 				removeGameObj(mineTurnList, pos, yourTurnListSection);
 			
-			Log.d("gamestate init", "adding to view");
 			ArrayList<Game> tmpList = new ArrayList<Game>();
 			tmpList = addGameObjToList(mineTurnList, game);
 			
@@ -620,17 +605,11 @@ public class AllGamesActivity extends ListActivity {
 	}
 	
 	private ArrayList<Game> addGameObjToList(ArrayList<Game> list, Game game){
-		Log.d("size", Integer.toString(list.size()));
-
 		if(!list.isEmpty()){
 			for(int index=0; index < list.size(); index ++){
       	String timeLast = list.get(index).getTimeSinceLastMove();
       	String tmpInput = game.getTimeSinceLastMove();
       	
-//				Log.i("timeSinceLastMove - inside array", list.get(index).getTimeSinceLastMove());
-//				Log.i("timeSinceLastMove - input objTime", game.getTimeSinceLastMove());
-//				Log.i("index", Integer.toString(index));
-				
 				DateFormat myDateFormat = new SimpleDateFormat("HH:mm:ss");
 				
       	try {
@@ -643,7 +622,6 @@ public class AllGamesActivity extends ListActivity {
 					tempInputDate.setTime(millisecondsDate);	
 
 					if(tempInputDate.compareTo(tempLastDate) < 0){
-						Log.d("adds", "gameObj");
 						list.add(index, game);
 						return list;
 					}

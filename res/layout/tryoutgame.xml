@@ -130,5 +130,4 @@
             android:stretchMode="columnWidth" >
         </GridView>
     </RelativeLayout>
-
-</com.saimenstravelapp.drag2.DragLayer>
+    </com.saimenstravelapp.drag2.DragLayer>

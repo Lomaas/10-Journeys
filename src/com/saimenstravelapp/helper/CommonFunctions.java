@@ -32,8 +32,7 @@ import async.httprequest.AsynchronousHttpClient;
 import async.httprequest.ResponseListener;
 
 import com.google.android.gcm.GCMRegistrar;
-import com.saimenstravelapp.R;
-import com.markupartist.android.widget.ActionBar;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.AllGamesActivity;
 import com.saimenstravelapp.activitys.ChatActivity;
 import com.saimenstravelapp.activitys.GameActivity;
@@ -42,6 +41,7 @@ import com.saimenstravelapp.activitys.NewGameActivity;
 import com.saimenstravelapp.activitys.domain.Extrainfo;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.activitys.domain.Message;
+import com.markupartist.android.widget.ActionBar;
 
 
 public class CommonFunctions {
@@ -106,17 +106,13 @@ public class CommonFunctions {
 	}
 
 	public static void evaluateResponseGiveUp(Context context, String message){
-		Log.i("evaluateResponse", message);
-
 		try {
 			JSONObject response = new JSONObject(message);
 
-			if(response.has("error")){
+			if(response.has("error"))
 				new Alert("Uups", response.getString("error"), context);
-			}
-			else{
+			else
 				Toast.makeText(context, "Added " + response.getString("username") +  " to your friendslist", Toast.LENGTH_LONG).show(); 
-			}
 		}
 		catch (JSONException e) { 
 			e.printStackTrace();
@@ -178,8 +174,6 @@ public class CommonFunctions {
 		JSONObject postBody = new JSONObject();
 
 		try {
-			//			postBody.put("userId", Login.getUserId(loginSettings));
-			Log.i("response TO game request", Integer.toString(opponentId));
 			postBody.put("opponentId", opponentId);
 			postBody.put("type", type);
 			postBody.put("accept", accept);
@@ -200,9 +194,6 @@ public class CommonFunctions {
 		Cursor cursor = adapter.fetchAllGameRequests();
 
 		for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
-			// use cursor to work with current item
-			Log.i("type", cursor.getString(1));
-			Log.i("username", cursor.getString(2));
 			String message =  cursor.getString(2) + " has sent you an game invite. Confirm? (" + cursor.getString(1) + ")";
 			specialAlertForGameRequest("Game request", message, cursor.getInt(0), CommonFunctions.getMapFromString(cursor.getString(1)), ctx, loginPreferences);
 			//adapter.deleteGameRequest(cursor.getInt(0));
@@ -212,7 +203,6 @@ public class CommonFunctions {
 
 
 	public static void evaluateAddFriend(String message, Context context){
-		Log.i("evaluateResponse", message);
 		try {
 			JSONObject response = new JSONObject(message);
 
@@ -231,13 +221,11 @@ public class CommonFunctions {
 		ResponseListener addFriendListener= new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.i("Response", response.toString());
 				evaluateAddFriend(message, context);
 			}
 		};
 
 		JSONObject postBody = new JSONObject();
-		Log.i("friend", friend);
 
 		try {
 			postBody.put(key, friend);
@@ -254,7 +242,6 @@ public class CommonFunctions {
 		ResponseListener addFriendListener= new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.i("Response", response.toString());
 				evaluateAddFriend(message, context);
 			}
 		};
@@ -272,27 +259,6 @@ public class CommonFunctions {
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, addFriendListener, loginSettings);
 	}
-
-	//	public static Notification createNotification(Context arg0, int notficationId, String ticker, String title, String contextText, int drawableIdSmall, int drawableIdBig){
-	//		Intent notificationIntent = new Intent(arg0, AllGamesActivity.class);
-	//		PendingIntent contentIntent = PendingIntent.getActivity(arg0,
-	//				notficationId, notificationIntent,
-	//				PendingIntent.FLAG_CANCEL_CURRENT);
-	//
-	//		Resources res = arg0.getResources();
-	//		Notification.Builder builder = new Notification.Builder(arg0);
-	//
-	//		builder.setContentIntent(contentIntent)
-	//		.setSmallIcon(drawableIdSmall)
-	//		.setLargeIcon(BitmapFactory.decodeResource(res, drawableIdBig))
-	//		.setTicker(ticker)
-	//		.setWhen(System.currentTimeMillis())
-	//		.setAutoCancel(true)
-	//		.setContentTitle(title)
-	//		.setContentText(contextText);
-	//		Notification n = builder.getNotification();
-	//		return n;
-	//	}
  
 	public static void specialAlert(String title, final int friend, String message, final Context context, final SharedPreferences loginSettings){
 		new AlertDialog.Builder(context)
@@ -369,25 +335,17 @@ public class CommonFunctions {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				Log.i("onReceive", "broadcast");
 				Bundle extras = intent.getExtras();
 				boolean shouldSetGameInfo = true;
 				
 				if(fromActivity == CommonFunctions.FROM_STANDARD_ACTIVITY){
 					if(extras.containsKey("newChatMsg")){
-						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
 						Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
 					}
 				}
 				else if(fromActivity == CommonFunctions.FROM_CHAT_ACTIVITY){
-					Log.i("gotNewChat", "new chat msg");
-
 					if(extras.containsKey("newChatMsg")){
 						ChatActivity chatActivity = (ChatActivity) context;
-						Log.i("mesg", extras.getString("msg"));
-
-						Log.i("id", chatActivity.getGameId());
-						Log.i("mesg", extras.getString("newChatMsg"));
 
 						if(chatActivity.getGameId().equals(extras.getString("newChatMsg"))){
 							chatActivity.addNewMessage(new Message(extras.getString("msg"), false));
@@ -403,7 +361,6 @@ public class CommonFunctions {
 					if(extras.containsKey("cardDeckReset")){
 						if(gameActivity.gameId == Integer.parseInt(extras.getString("gameId"))){
 							new Alert("Card deck reset", "The card deck has been reset", context);
-							Log.i("cardeckReset", "reset");
 						}
 						else {
 							shouldSetGameInfo = false;
@@ -414,7 +371,6 @@ public class CommonFunctions {
 						if(gameActivity.gameId == Integer.parseInt(extras.getString("newChatMsg")))
 							gameActivity.setGotNewMessage();
 
-						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
 						Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
 					}
 				}
@@ -429,7 +385,6 @@ public class CommonFunctions {
 							gameFinishActivity.setChatIconRed();
 						}
 
-						Log.i("gotNewChat", "new chat msg " + extras.getString("newChatMsg"));
 						Extrainfo.setNewChatMsg(context.getSharedPreferences(Extrainfo.PREFS_NAME, 0), extras.getString("newChatMsg"), true);
 					}
 				}
@@ -442,7 +397,6 @@ public class CommonFunctions {
 					CommonFunctions.postRegId(context, context.getSharedPreferences(Login.PREFS_NAME, 0));
 
 				else if(extras.containsKey("gameRequest")){
-					Log.i("opponentId commonfunctions", extras.getString("opponentId"));
 					String message = extras.getString("gameRequest") + " has sent you an game invite. Confirm? (" + extras.getString("type") + ")";
 					specialAlertForGameRequest("Game request", message, Integer.parseInt(extras.getString("opponentId")), CommonFunctions.getMapFromString(extras.getString("type")), context, loginPreferences);
 				}
@@ -475,7 +429,6 @@ public class CommonFunctions {
 		Cursor cursor = adapter.fetchAllGameInfo(gameId);
 		
 		for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
-			Log.i("gameInfo", cursor.getString(0));
 			if(cursor.getInt(0) == gameId){
 				new Alert("Card deck reset", "The card deck has been reset", ctx);
 				adapter.deleteGameInfo(gameId);
@@ -488,15 +441,11 @@ public class CommonFunctions {
   	Time now = new Time();
   	now.setToNow();
   	long milliseconds = now.toMillis(false);
-		Log.i("time now: ", Long.toString(milliseconds));
-		Log.i("GCMRegisted is: : ", Long.toString(Login.getTimeSinceReggedForPush(loginSettings)));
-
+	
   	if(Login.getTimeSinceReggedForPush(loginSettings) <= milliseconds){
   		GCMRegistrar.register(ctx, "84214609772");
 			String regId = GCMRegistrar.getRegistrationId(ctx);
-			Log.i("GCMRegistar regId is expired, new regId: ", regId);
-			Log.i("GCMRegistar milli: ", Long.toString(GCMRegistrar.getRegisterOnServerLifespan(ctx)));
-			
+				
 			milliseconds += GCMRegistrar.getRegisterOnServerLifespan(ctx);
 	  	Login.setTimeReggedPush(loginSettings, milliseconds);
   	}
@@ -505,17 +454,16 @@ public class CommonFunctions {
 	public static void regWithGoogleServer(Context ctx, SharedPreferences loginSettings){
 		GCMRegistrar.checkDevice(ctx);
 		GCMRegistrar.checkManifest(ctx);
+//		Log.d("GCM", "regWithGoogleServer");
 
 		String regId = GCMRegistrar.getRegistrationId(ctx);
 		
 		if (regId.equals("")) {
-			Log.i("GCMRegistar regId", "before register");
-//			Toast.makeText(ctx, "trying to reg", Toast.LENGTH_LONG).show();
+//			Log.d("GCM", "registration");
 
 			GCMRegistrar.register(ctx, "84214609772");
 			regId = GCMRegistrar.getRegistrationId(ctx);
-			Log.i("GCMRegistar regId", "testregid" + regId);
-//			Toast.makeText(ctx, regId, Toast.LENGTH_LONG).show();
+//			Log.d("GCM", "regid" + regId);
 
 	  	Time now = new Time();
 	  	now.setToNow();
@@ -523,33 +471,29 @@ public class CommonFunctions {
 	  	milliseconds += GCMRegistrar.getRegisterOnServerLifespan(ctx);
 	  	Login.setTimeReggedPush(loginSettings, milliseconds);
 		} else {
-			Log.i("GCM", "Already registered");
+//			Log.d("GCM", "isRegistrated");
+			postRegId(ctx, loginSettings);
+
 //			Toast.makeText(ctx, "already registered", Toast.LENGTH_LONG).show();
 		}
-		postRegId(ctx, loginSettings);
 		
 	}
 
 	public static void postRegId(final Context context, final SharedPreferences loginSettings){
-		Log.i("postRegid", "pushingToServer");
-
 		ResponseListener responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.i("postRegId", message);
 				try {
+//					Log.d("regResponse", "response" + message);
 					JSONObject obj = new JSONObject(message);
 					if(obj.has("registred")){
-//						Toast.makeText(context, "Registered", Toast.LENGTH_LONG).show();
 						Login.setIsReggedPush(loginSettings);
 					}
 					else {
-//						Toast.makeText(context, "Retrys regId", Toast.LENGTH_LONG).show();
 						try {
 							Thread.sleep(10000);
 						}
 						catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						postRegId(context, loginSettings);
@@ -567,6 +511,7 @@ public class CommonFunctions {
 			JSONObject post = new JSONObject();
 
 			post.put("regId", Login.getGoogleRegistrationId(loginSettings));
+//			Log.d("regId", "REGID: " + Login.getGoogleRegistrationId(loginSettings));
 			se = new StringEntity(post.toString());
 		}
 		catch (URISyntaxException e1) { e1.printStackTrace(); }

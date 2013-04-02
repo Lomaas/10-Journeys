@@ -59,8 +59,6 @@ public class LoginActivity extends Activity {
 		username = (TextView) findViewById(R.id.eTextLoginUsername);
 		password = (TextView) findViewById(R.id.ePassword);
 
-		Log.d("password", Login.getPassword(loginSettings));
-
 		responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
@@ -81,7 +79,6 @@ public class LoginActivity extends Activity {
 		
 		// if not session expired login!
 		if(!Login.isSessionExpired(loginSettings) ){
-			Log.i("sessionNOtExpired", "not expired");
 			Intent allGamesActivity = new Intent().setClass(this, AllGamesActivity.class);
 			startActivity(allGamesActivity);
 			finish();			// can't return to this activity when signed in
@@ -91,7 +88,7 @@ public class LoginActivity extends Activity {
 
 		/* Post loginInfo if registered */
 		if(Login.isRegistered(loginSettings)){
-			Log.i("isRegistered", "just posts info");
+			Log.d("isRegistered", "posting info");
 			String tmpUsername = Login.getUsername(loginSettings);
 			String tmpPassword = Login.getPassword(loginSettings);
 			username.setText(tmpUsername);
@@ -99,7 +96,7 @@ public class LoginActivity extends Activity {
 			postLoginInfo(tmpUsername, tmpPassword);
 		}
 		else if(extras != null && extras.getBoolean("fromReg")){
-			Log.d("fromReg", "fromReg");
+			Log.d("fromRegistration", "do nothing");
 		}
 		else{
 			Intent i = new Intent().setClass(this, RegisterActivity.class);
@@ -160,8 +157,6 @@ public class LoginActivity extends Activity {
 	}
 
 	public void confirmLogin(String responseBody){
-		Log.i("ConfirmLogin", responseBody);
-
 		JSONObject response = null;
 
 		try {
@@ -187,9 +182,6 @@ public class LoginActivity extends Activity {
 		catch (JSONException e) { 
 			e.printStackTrace(); 
 			new Alert("Ups",  "An error occured, please try to log in again", this);
-
 		}
-
-
 	}
 }

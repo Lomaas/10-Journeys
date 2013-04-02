@@ -5,25 +5,18 @@ package com.saimenstravelapp.activitys;
 
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Random;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,13 +29,13 @@ import async.httprequest.AsynchronousHttpClient;
 import async.httprequest.ResponseListener;
 
 import com.saimenstravelapp.*;
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
 import com.saimenstravelapp.activitys.domain.*;
 import com.saimenstravelapp.activitys.utils.Utility;
 import com.saimenstravelapp.helper.AwesomeAdapter;
 import com.saimenstravelapp.helper.BuildHttpRequest;
 import com.saimenstravelapp.helper.CommonFunctions;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 /**
  * MessageActivity is a main Activity to show a ListView containing Message items
@@ -88,7 +81,6 @@ public class ChatActivity extends ListActivity {
 		
 		Extrainfo.setNewChatMsg(getSharedPreferences(Extrainfo.PREFS_NAME, 0), this.getGameId(), false);
 
-		Log.i("gameIchatD", getGameId());
 
 		GET_CHAT_MSG += getGameId();
 		POST_CHAT_MSG += getGameId();
@@ -117,7 +109,6 @@ public class ChatActivity extends ListActivity {
 		responseForChatMsg = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.d("Response", message.toString());
 				mProgress.setVisibility(View.GONE);
 				evaluateResponse(message);
 			}
@@ -185,9 +176,7 @@ public class ChatActivity extends ListActivity {
 			JSONArray jObj = new JSONArray(message);
 			JSONObject obj = jObj.getJSONObject(0);
 			int index = 0;
-			
-			Log.i("opponentId", opponentId);
-			
+						
 			while(obj != null){
 				boolean isMine = true;
 				

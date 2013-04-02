@@ -1,11 +1,8 @@
 package com.saimenstravelapp.helper;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import com.saimenstravelapp.*;
-import com.saimenstravelapp.activitys.AllGamesActivity;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.View;

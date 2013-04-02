@@ -13,7 +13,8 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.saimenstravelapp.R;
+
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.TryOutGame;
 import com.saimenstravelapp.activitys.domain.GameGUI;
 import com.saimenstravelapp.helper.Alert;
@@ -73,12 +74,12 @@ implements DragSource, DropTarget
 
 		if(TryOutGame.STATE == TryOutGame.YOUR_TURN){ 
 			if(isYourCardsGrid()){
-				Log.d("allowDrag", "test1");
+//				Log.d("allowDrag", "test1");
 				return false;
 			}
 		}
 		else if(TryOutGame.STATE == TryOutGame.YOUR_TURN_FROM_DECK){
-			Log.d("allowDrag", "state is your turn from deck");
+//			Log.d("allowDrag", "state is your turn from deck");
 			if(this.getFromGridId() == 0)
 				return true;
 			if(isYourCardsGrid())
@@ -88,7 +89,7 @@ implements DragSource, DropTarget
 
 		}
 		else if(TryOutGame.STATE == TryOutGame.OPPONENTS_TURN){
-			Log.d("allowDrag", "state is opponentsturn");
+//			Log.d("allowDrag", "state is opponentsturn");
 
 			return false;
 		}
@@ -104,14 +105,14 @@ implements DragSource, DropTarget
 			if(mCellNumber == TryOutGame.cellTakenFrom && !TryOutGame.hasOpenCardParent(mCellNumber) && TryOutGame.cellTakenFrom != -1){
 				return false;
 			}
-			Log.d("allowDrag", "is draggable");
+//			Log.d("allowDrag", "is draggable");
 		}
 		return !mEmpty;
 	}
 
 	public boolean isYourCardsGrid(){
 		if(this.mGrid != null && this.mGrid.getId() == R.id.image_grid_view){
-			Log.d("isFromYourCardsGrid", "true");
+//			Log.d("isFromYourCardsGrid", "true");
 			return true;
 		}
 		return false;
@@ -119,7 +120,7 @@ implements DragSource, DropTarget
 
 	public boolean isFromOpenCardsGrid(){
 		if(this.mGrid != null && this.mGrid.getId() == R.id.gridForCardsOnTable){
-			Log.d("isFromYourOpenCards", "true");
+//			Log.d("isFromYourOpenCards", "true");
 			return true;
 		}
 		return false;
@@ -158,7 +159,7 @@ implements DragSource, DropTarget
 					this.draggable = true;
 					TryOutGame.setPlayButtonVisible();
 					TryOutGame.setState(TryOutGame.YOUR_TURN_INSERT_TO_OPEN_CARDS);
-					Log.i("are you here", "onDropCompleted");
+//					Log.i("are you here", "onDropCompleted");
 					if(this.allowDrag())
 						setBackgroundResource(R.color.cell_empty_hover);
 					return;
@@ -167,17 +168,12 @@ implements DragSource, DropTarget
 				int deletedCardId = cardAdapter.getGameGUIS().get(this.mCellNumber).getDeletedCardId();
 				int currentCardId = cardAdapter.getGameGUIS().get(this.mCellNumber).getCurrentCardId();
 
-				Log.d("0 -currentcardid", Integer.toString(currentCardId));
-				Log.d("0- deletedcardid", Integer.toString(deletedCardId));
-
 				ArrayList<GameGUI> gameGui = cardAdapter.getGameGUIS();
 				GameGUI currentGameGui = gameGui.get(this.mCellNumber);
 
 				if(TryOutGame.cellTakenFrom == this.mCellNumber){
 					// TODO kommentert kode var opprinnelige
 					
-					Log.d("onDropCompleted", "cellTakenFrom is this cell");
-//					
 					cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(TryOutGame.getCardIdFromOpenCardParent(this.mCellNumber), 
 							this.mCellNumber, TryOutGame.getCardIdFromOpenCardParent(this.mCellNumber), true, deletedCardId, false));
 					this.setImageResource(TryOutGame.getDrawableIdFromCardId(TryOutGame.getCardIdFromOpenCardParent(this.mCellNumber)));
@@ -196,7 +192,6 @@ implements DragSource, DropTarget
 					this.draggable = false;
 
 					if (d != null) {
-						Log.i("onDropCompleted", "not null drawable");
 						this.setImageDrawable (d);
 					}
 					if(TryOutGame.cellTakenFrom == this.mCellNumber)
@@ -205,7 +200,7 @@ implements DragSource, DropTarget
 						cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(this.getDrawableId(), this.mCellNumber, deletedCardId, false, 0, this.draggable));
 				}
 				else {
-					Log.i("onDropCompleted", "Was previous a empty cell");
+//					Log.i("onDropCompleted", "Was previous a empty cell");
 					setImageDrawable (null);
 					ImageCellAdapter adapter = (ImageCellAdapter) this.mGrid.getAdapter();
 					cardAdapter.getGameGUIS().set(this.mCellNumber, new GameGUI(0, this.mCellNumber, 0, false, 0, false));
@@ -219,7 +214,7 @@ implements DragSource, DropTarget
 				}
 			}
 			else {
-				Log.i("onDropCompleted", "DROP FROM OUTSIDE OF A GRID. DO NOTHING");
+//				Log.i("onDropCompleted", "DROP FROM OUTSIDE OF A GRID. DO NOTHING");
 				if(TryOutGame.getState() == TryOutGame.YOUR_TURN){
 					TryOutGame.setPlayButtonVisible();
 				}
@@ -276,7 +271,7 @@ implements DragSource, DropTarget
 		
 		if(mEmpty == false){			
 			if(TryOutGame.getState() == TryOutGame.INIT){
-				toast("In init you can only update days that are still available");
+				toast("In start up you can only update positions that are still available");
 				return;
 			}
 			else if(TryOutGame.getState() == TryOutGame.YOUR_TURN_INSERT_TO_OPEN_CARDS){
@@ -289,9 +284,6 @@ implements DragSource, DropTarget
 				insertToOpenCardGrid(this.getCardId(), this.getDrawableId(), cell.mCellNumber, cell.mGrid, cell.getFromGridId());
 			}
 		}
-
-		Log.d("onDrop5", Integer.toString(this.getDrawableId()));
-		Log.d("onDrop6", Integer.toString(this.mGrid.getId()));
 
 		mEmpty = false;		// always not empty when coming so far,
 
@@ -370,10 +362,6 @@ implements DragSource, DropTarget
 		if(this.mGrid != null){		
 			TryOutGame TryOutGame = (TryOutGame) dragView.getContext();
 
-			Log.d("aceeptDrop", Integer.toString(this.mGrid.getId()));
-			Log.d("acceptDrop", Integer.toString(R.id.gridForCardsOnTable));
-			Log.d("acceptDrop", Integer.toString(cell.getFromGridId()));
-
 			if(TryOutGame.STATE == TryOutGame.INIT){
 				if(this.mGrid.getId() == R.id.gridForCardsOnTable)
 					return false;
@@ -412,7 +400,6 @@ implements DragSource, DropTarget
 
 		if(fromGridId == 0){
 			// If zero - means that it is a drop from the cardDeck
-			Log.i("gridview", "is zero");
 
 			adapter = (ImageCellAdapter) gridView.getAdapter();
 			GameGUI oldGui = adapter.getGameGUIS().get(0);
@@ -431,7 +418,6 @@ implements DragSource, DropTarget
 			adapter.getGameGUIS().set(index, newGui);
 			adapter.notifyDataSetChanged();
 		}
-		Log.i("inserts ToOpenCardGrid", "seems ok");
 	}
 
 	/**

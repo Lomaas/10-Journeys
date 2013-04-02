@@ -10,7 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import com.saimenstravelapp.R;
+
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.Message;
 
 import android.widget.LinearLayout.LayoutParams;

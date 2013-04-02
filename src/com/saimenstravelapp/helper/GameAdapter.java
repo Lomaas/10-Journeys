@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-import com.saimenstravelapp.R;
+
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.*;
 import android.content.Context;
 import android.view.LayoutInflater;

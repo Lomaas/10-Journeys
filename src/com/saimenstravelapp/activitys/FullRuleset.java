@@ -12,22 +12,15 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 
-import com.saimenstravelapp.R;
+import com.saimenstravelapp.activitys.domain.*;
+import com.saimenstravelapp.helper.CommonFunctions;
+import com.saimenstravelapp.*;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import com.markupartist.android.widget.ActionBar;
 import com.markupartist.android.widget.ActionBar.Action;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.revmob.RevMob;
-import com.revmob.RevMobAdsListener;
-import com.revmob.ads.fullscreen.RevMobFullscreen;
-import com.saimenstravelapp.activitys.domain.*;
-import com.saimenstravelapp.helper.CommonFunctions;
 
 public class FullRuleset extends Activity {
 
@@ -45,11 +38,8 @@ public class FullRuleset extends Activity {
 		setContentView(R.layout.fullruleset);
 
 		WebView webView = (WebView) findViewById(R.id.webView1);
-		//		webView.setVerticalScrollBarEnabled(false);
-		//		webView.setHorizontalScrollBarEnabled(false);
 		webView.getSettings().setLoadWithOverviewMode(true);
 		webView.loadUrl("file:///android_asset/fullruleset.html");
-		//		webView.loadUrl("file:///android_asset/test.html");
 		loginSettings = getSharedPreferences(Login.PREFS_NAME, 0);
 
 		gcmReceiver = CommonFunctions.createBroadCastReceiver(this, loginSettings, CommonFunctions.FROM_STANDARD_ACTIVITY);

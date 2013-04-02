@@ -29,6 +29,7 @@ import com.saimenstravelapp.activitys.domain.Extrainfo;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.helper.CommonFunctions;
 import com.saimenstravelapp.helper.DbAdapter;
+import com.saimenstravelapp.*;
 
 /**
  * @author Simen
@@ -48,7 +49,7 @@ public class GCMIntentService extends GCMBaseIntentService{
 
 	@Override
 	protected void onError(Context context, String error) {
-		Log.i("gcmIntentService", "error" + error);
+		Log.d("gcmIntentService", "error" + error);
 		SharedPreferences loginSettings = getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE);
 		
 		if (error != null) {
@@ -61,25 +62,23 @@ public class GCMIntentService extends GCMBaseIntentService{
 			   
 			   PendingIntent retryPendingIntent =
 			       PendingIntent.getBroadcast(context, 0, retryIntent, 0);
-			   AlarmManager am = (AlarmManager)   
+			   AlarmManager am = (AlarmManager)
 			       context.getSystemService(Context.ALARM_SERVICE);
 			   am.set(AlarmManager.ELAPSED_REALTIME, nextAttempt, retryPendingIntent);
 			   backoffTimeMs *= 2; // Next retry should wait longer.
 			   
 			   Login.storeBackOffTime(loginSettings, backoffTimeMs); // update back-off time on shared preferences
-			 } else {
-			   // Unrecoverable error, log it
-			   Log.i(TAG, "Received error: " + error);
-			}
+			 }
 		}
 	}
 
 	@Override
 	protected void onRegistered(Context arg0, String arg1) {
-		Log.i("gcmIntentService - onRegId:", "onReg" + arg1);
+		Log.d("gcmIntentService - onRegId:", "onReg" + arg1);
+		
 		Login.storeGoogleRegistrationId(getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE), arg1);
 		sendGCMIntent(arg0, "successRegWithGoogle", "jepp", null, null, null, null);
-	}	
+	}
 	
 
 	@Override
@@ -91,7 +90,7 @@ public class GCMIntentService extends GCMBaseIntentService{
 
 	@Override
 	protected void onMessage(Context arg0, Intent arg1) {
-		Log.i("gcmIntentService", "onMsg sfjkslfjksljfkslfjksl jfklsjfklsjf klsjflkj");
+//		Log.i("gcmIntentService", "onMsg sfjkslfjksljfkslfjksl jfklsjfklsjf klsjflkj");
 		Resources res = arg0.getResources();
 		Bundle extras = arg1.getExtras();
 		
@@ -103,7 +102,7 @@ public class GCMIntentService extends GCMBaseIntentService{
 			
 			if(extras.containsKey("userIdTo")){
 				String userIdTo = extras.getString("userIdTo");
-				Log.d("userIdTo", userIdTo);
+				// Log.d("userIdTo", userIdTo);
 				if(Integer.parseInt(userIdTo) != Login.getUserId(getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE)))
 					return;
 			}
@@ -113,8 +112,8 @@ public class GCMIntentService extends GCMBaseIntentService{
 				String opponentUsername = extras.getString("opponentUsername");
 				String fid = extras.getString("fid");
 
-				Log.i("opponentUsername", opponentUsername);
-				Log.i("fid", fid);
+				// Log.i("opponentUsername", opponentUsername);
+				// Log.i("fid", fid);
 
 				notificationIntent.putExtra(AllGamesActivity.NOTIFICATION_FRIEND_REQUEST, true);
 				notificationIntent.putExtra("fid", Integer.parseInt(fid));
@@ -126,13 +125,13 @@ public class GCMIntentService extends GCMBaseIntentService{
 				// Your turn
 				String yourTurn = extras.getString("yourTurn");
 				String action = extras.getString("action");
-				Log.i("gcmIntentServiceOnMsg", yourTurn);
+				// Log.i("gcmIntentServiceOnMsg", yourTurn);
 
 				notificationIntent.putExtra(AllGamesActivity.NOTIFICATION_YOUR_TURN, true);
 				launchNotfication(arg0, "Your turn", "It is your turn. " + action, notificationIntent);
 			}
 			else if(extras.containsKey("newGame")){
-				Log.i("gcmIntentServiceOnMsg", "newGame");
+				// Log.i("gcmIntentServiceOnMsg", "newGame");
 
 				// Your turn
 				String opponent = extras.getString("opponent");
@@ -149,7 +148,6 @@ public class GCMIntentService extends GCMBaseIntentService{
 			else if(extras.containsKey("gameRequest")){
 				String type = extras.getString("type");
 				launchNotfication(arg0, "New game request", extras.getString("opponent") + " has invited you to a game ("+ type + ")", notificationIntent);
-				Log.i("opponetId-notfication", extras.getString("opponentId"));
 				DbAdapter adapter = new DbAdapter(arg0);
 				adapter.open();
 				adapter.insertNewGameRequest(Integer.parseInt(extras.getString("opponentId")), extras.getString("type"), extras.getString("opponent"));
@@ -163,13 +161,12 @@ public class GCMIntentService extends GCMBaseIntentService{
 			// IF app is screened show popup msg
 			if(extras.containsKey("userIdTo")){
 				String userIdTo = extras.getString("userIdTo");
-				Log.d("userIdTo", userIdTo);
 				if(Integer.parseInt(userIdTo) != Login.getUserId(getSharedPreferences(Login.PREFS_NAME, Activity.MODE_PRIVATE)))
 					return;
 			}
 			
 			if(extras.containsKey("friendAdded")){
-				Log.d("gcmIntentService", "friend add");
+				// Log.d("gcmIntentService", "friend add");
 				sendGCMIntent(arg0, "friendAdded", "true", "opponentUsername", extras.getString("opponentUsername"), null, null);
 			}
 			else if(extras.containsKey("fid")){
@@ -184,8 +181,8 @@ public class GCMIntentService extends GCMBaseIntentService{
 				sendGCMIntent(arg0, "newChatMsg", extras.getString("gameId"), "userId", extras.getString("userId"), "msg", extras.getString("msg"));
 			}
 			else if(extras.containsKey("gameRequest")){
-				Log.i("got GCM msg", extras.getString("opponent"));
-				Log.i("got GCM msg", extras.getString("opponentId"));
+				// Log.i("got GCM msg", extras.getString("opponent"));
+				// Log.i("got GCM msg", extras.getString("opponentId"));
 				
 				DbAdapter adapter = new DbAdapter(arg0);
 				adapter.open();
@@ -220,53 +217,6 @@ public class GCMIntentService extends GCMBaseIntentService{
 		notification.defaults = Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE;
 		mManager.notify(APP_ID, notification);
 	}
-	
-	private void handleMessage( final Intent intent )
-	{
-		Thread t = new Thread()
-		{
-			public void run()
-			{
-				Bundle extras = intent.getExtras();
-				Message myMessage = new Message();
-				Bundle resBundle = new Bundle();
-
-				if(extras.containsKey("friendAdded")){
-					Log.d("gcmIntentService", "friend add");
-					resBundle.putBoolean( "friendAdded", true);
-				}
-				else if(extras.containsKey("fid")){
-					String fid = extras.getString("fid");
-					String opponentUsername = extras.getString("opponentUsername");
-					resBundle.putString("fid", fid);
-					resBundle.putString("opponentUsername", opponentUsername);
-				}
-
-				myMessage.setData( resBundle );
-				handler.sendMessage( myMessage );
-			}
-		};
-		t.start();
-	}
-
-	private Handler handler = new Handler()
-	{
-
-		public void handleMessage( Message msg )
-		{
-			Log.i("handleMsg", "handle it!");
-			Bundle extras = msg.getData();
-
-			if(extras.containsKey("friendAdded")){
-				Log.d("gcmIntentService", "friend add");
-
-				Toast.makeText(getBaseContext(), extras.getString("opponentUsername") + " accepted your friend request", Toast.LENGTH_LONG).show();
-			}
-			else if(extras.containsKey("fid")){
-				Log.d("f", "a");
-			}
-		}
-	};
 
 	private void sendGCMIntent(Context ctx, String key1, String msg1, String key2, String msg2, String key3, String msg3) {
 

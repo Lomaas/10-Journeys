@@ -26,13 +26,13 @@ import android.widget.TextView;
 import async.httprequest.AsynchronousHttpClient;
 import async.httprequest.ResponseListener;
 
-import com.saimenstravelapp.R;
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.GameFinishActivity.ImgAdapter;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.helper.CommonFunctions;
 import com.saimenstravelapp.helper.ImageAdapter;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 /**
  * @author Simen

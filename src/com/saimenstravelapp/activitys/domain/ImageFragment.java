@@ -2,10 +2,9 @@
  * 
  */
 package com.saimenstravelapp.activitys.domain;
-import com.saimenstravelapp.R;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.IntroductionActivity;
 import com.saimenstravelapp.activitys.TryOutGame;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;

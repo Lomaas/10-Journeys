@@ -1,21 +1,15 @@
 package com.saimenstravelapp.activitys;
 
-import org.apache.http.Header;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.android.gcm.GCMRegistrar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.View;
@@ -65,15 +59,6 @@ public class RegisterActivity extends Activity {
 		responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.i("Response", message);
-				Header tmp;
-				HeaderIterator iter = response.headerIterator();
-
-				while(iter.hasNext()){
-					tmp = iter.nextHeader();
-					Log.i("header-Name", tmp.getName());
-					Log.i("header- Value", tmp.getValue());
-				}
 				progDialog.dissMissProgressDialog();
 				confirmRegistration(message);
 			}
@@ -86,9 +71,8 @@ public class RegisterActivity extends Activity {
 	 */
 
 	public void confirmRegistration(String responseBody){
-		Log.i("ConfirmRegistartion", responseBody);
-
 		JSONObject response = null;
+		Log.d("response", responseBody);
 
 		try {
 			response = new JSONObject(responseBody);
@@ -99,7 +83,13 @@ public class RegisterActivity extends Activity {
 				Login.setRegistered(loginSettings);
 
 				Login.storeUsername(loginSettings, response.getString("Username"));
-				Login.setEmail(loginSettings, response.getString("Email"));
+				
+				if(!response.getString("Email").equals(response.getString("Username"))){
+					Login.setEmail(loginSettings, response.getString("Email"));
+				}
+				else {
+					Login.setEmail(loginSettings, "None");
+				}
 				Login.storePassword(loginSettings, password);
 				Login.setLoggedInRightNow(loginSettings);
 				Login.setNotReggedPush(loginSettings);
@@ -167,7 +157,6 @@ public class RegisterActivity extends Activity {
 
 			progDialog.run();
 
-
 			AsynchronousHttpClient a = new AsynchronousHttpClient();
 			a.sendRequest(httpPost, responseListener, loginSettings);
 		}
@@ -184,13 +173,13 @@ public class RegisterActivity extends Activity {
 	}
 
 	public boolean validInputData(){
-
-		if((editUsername.getText().length() > 0) && (editEmail.getText().length() > 0)){
+		if(editEmail.getText().length() > 0){
 			if(!isValidEmail(editEmail.getText().toString())){
 				new Alert("Email not valid", "The email you typed in is not valid. Please type in a valid email address", this);
 				return false;
 			}
-
+		}
+		if(editUsername.getText().length() > 0){
 			username = editUsername.getText().toString().trim();
 
 			if(username.contains(" ")){
@@ -199,10 +188,10 @@ public class RegisterActivity extends Activity {
 			}
 		}
 		else {
-			new Alert("Warning", "Both email and username has to be filled out", this);
+			new Alert("Warning", "Both username has to be filled out", this);
 			return false;
 		}
-
+		
 		return true;
 	}
 }

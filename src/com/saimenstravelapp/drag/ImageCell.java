@@ -11,7 +11,8 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.saimenstravelapp.R;
+
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.GameActivity;
 import com.saimenstravelapp.activitys.domain.GameGUI;
 import com.saimenstravelapp.helper.Alert;

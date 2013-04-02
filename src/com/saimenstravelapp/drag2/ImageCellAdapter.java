@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-import com.saimenstravelapp.R;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.TryOutGame;
 import com.saimenstravelapp.activitys.domain.GameGUI;
 

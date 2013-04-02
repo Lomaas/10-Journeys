@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.saimenstravelapp.R;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.Extrainfo;
 import com.saimenstravelapp.activitys.domain.Game;
 import com.saimenstravelapp.activitys.domain.GameGUI;
@@ -22,7 +22,6 @@ import com.saimenstravelapp.drag2.ImageCellAdapter;
 import com.saimenstravelapp.helper.Alert;
 import com.saimenstravelapp.helper.CommonFunctions;
 import com.saimenstravelapp.helper.Constants;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

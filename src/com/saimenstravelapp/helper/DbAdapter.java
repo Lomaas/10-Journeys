@@ -1,6 +1,5 @@
 package com.saimenstravelapp.helper;
 
-import com.saimenstravelapp.R;
 
 import android.content.ContentValues;
 import android.content.Context;

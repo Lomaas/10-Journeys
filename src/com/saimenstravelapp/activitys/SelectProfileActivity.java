@@ -43,14 +43,14 @@ import android.widget.ProgressBar;
 import async.httprequest.AsynchronousHttpClient;
 import async.httprequest.ResponseListener;
 
-import com.saimenstravelapp.R;
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
+import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.Login;
 import com.saimenstravelapp.helper.Alert;
 import com.saimenstravelapp.helper.CommonFunctions;
 import com.saimenstravelapp.helper.Constants;
 import com.saimenstravelapp.helper.ProgressDialogClass;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.Action;
 
 /**
  * @author Simen
@@ -100,14 +100,12 @@ public class SelectProfileActivity extends Activity {
 
 				new OnItemClickListener(){
 					public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-						Log.i("maybe pos: ?", Integer.toString(position));
 						postProfileIdUpdate(position+1);
 					}
 				});
 		responseListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
-				Log.i("onResponseReceived", message);
 				progDialog.dissMissProgressDialog();
 				evaulateResponse(message);
 			}
@@ -185,7 +183,6 @@ public class SelectProfileActivity extends Activity {
 				MyView = li.inflate(R.layout.grid_item_profile, null);
 
 				// Add The Image!!!           
-				Log.i("pos", Integer.toString(position+1));
 				ImageView imageView = (ImageView)MyView.findViewById(R.id.grid_item_image);
 				if(Constants.profileArray.length > position +1)
 					imageView.setImageResource(Constants.profileArray[position+1]);
@@ -194,8 +191,6 @@ public class SelectProfileActivity extends Activity {
 		}
 
 		public int getCount() {
-			Log.i("len", Integer.toString(Constants.profileArray.length));
-
 			return Constants.profileArray.length;
 		}
 
