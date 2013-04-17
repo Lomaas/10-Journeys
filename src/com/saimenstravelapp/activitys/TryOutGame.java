@@ -310,14 +310,14 @@ public class TryOutGame extends Activity implements View.OnLongClickListener, Vi
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
-		{
-		case R.id.menu_rules:
+		int itemId = item.getItemId();
+
+		if(itemId == R.id.menu_rules){
 			Intent intent = new Intent().setClass(context, FullRuleset.class);
 			startActivity(intent);
 			return true;
-
-		default:
+		}
+		else{
 			return super.onOptionsItemSelected(item);
 		}
 	}    

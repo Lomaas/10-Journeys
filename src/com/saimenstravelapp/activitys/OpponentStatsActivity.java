@@ -125,7 +125,7 @@ public class OpponentStatsActivity extends Activity {
 	public class GridAdapter extends BaseAdapter {
 		private Context mContext;
 		private JSONArray scores = null;
-		private int numberOfColumns = 5;
+		private int numberOfColumns = 4;
 
 		public GridAdapter(Context c, JSONArray scores) {
 			mContext = c;
@@ -165,15 +165,12 @@ public class OpponentStatsActivity extends Activity {
   						textView.setText("Name");
   					}
   					else if(position == 1){
-  						textView.setText("Games");
-  					}
-  					else if(position == 2){
   						textView.setText("Wins");
   					}
-  					else if(position == 3){
+  					else if(position == 2){
   						textView.setText("Loss");
   					}
-  					else if(position == 4){
+  					else if(position == 3){
   						textView.setText("Win-%");
   					}
 					}
@@ -191,13 +188,11 @@ public class OpponentStatsActivity extends Activity {
   					if(posInGrid == 0)
   						textView.setText(obj.getString("username"));
   					else if(posInGrid == 1)
-  						textView.setText(Integer.toString(totalGames));
-  					else if(posInGrid == 2)
   						textView.setText(Integer.toString(totalWins));
-  					else if(posInGrid == 3){
+  					else if(posInGrid == 2){
   						textView.setText(Integer.toString(totalGames - totalWins));
   					}
-  					else if(posInGrid == 4){
+  					else if(posInGrid == 3){
   						if(totalGames == 0)
     						textView.setText("-");
   						else{

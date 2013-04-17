@@ -358,34 +358,33 @@ public class GameActivity extends Activity implements View.OnLongClickListener, 
 	 * Identify single menu item by it's id
 	 * */
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item){
 		final ResponseListener giveUpListener = new ResponseListener() {
 			@Override
 			public void onResponseReceived(HttpResponse response, String message) {
 				confirmPlay(message);
 			}	
 		};
+		int itemId = item.getItemId(); 
 
-		switch (item.getItemId())
-		{
-		case R.id.menu_addFriend:
+		if(itemId == R.id.menu_addFriend){
 			CommonFunctions.sendFriendRequest("username", gameObject.getOpponentsUsername().get(0), loginSettings, context);
 			return true;
-		case R.id.menu_newGame:
+		}
+		else if(itemId == R.id.menu_newGame){
 			CommonFunctions.startGameFromUsername(context, gameObject.getOpponentsUsername().get(0), gameObject.getType(), null, loginSettings);
 			return true;
-
-		case R.id.menu_giveUp:
+		}
+		else if(itemId == R.id.menu_giveUp){
 			CommonFunctions.alertForGiveUp(context, gameObject.getGameId(), giveUpListener, loginSettings, CommonFunctions.FROM_GAME_ACTIVITY);
 			return true;
-
-		case R.id.menu_rules:
+		}
+		else if(itemId == R.id.menu_rules){
 			Intent intent = new Intent().setClass(context, FullRuleset.class);
 			startActivity(intent);
 			return true;
-
-		default:
+		}
+		else{
 			return super.onOptionsItemSelected(item);
 		}
 	}    

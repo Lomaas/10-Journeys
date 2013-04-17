@@ -98,14 +98,11 @@ public class AllGamesActivity extends ListActivity {
 		gcmFilter.addAction("GCM_RECEIVED_ACTION");
 
 		Bundle extras = getIntent().getExtras();
-		
+
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle(R.string.app_name);
 
-		final Action oppontentStatAction = new IntentAction(this, new Intent(this, OpponentStatsActivity.class), R.drawable.stat);
-		actionBar.addAction(oppontentStatAction);
-
-		final Action highscoreAction = new IntentAction(this, new Intent(this, HighscoreActivity.class), R.drawable.rank);
+		final Action highscoreAction = new IntentAction(this, new Intent(this, StatsActivity.class), R.drawable.rank);
 		actionBar.addAction(highscoreAction);
 
 		final Action settingsAction = new IntentAction(this, new Intent(this, SettingsActivity.class), R.drawable.ic_menu_settings);
@@ -155,7 +152,7 @@ public class AllGamesActivity extends ListActivity {
 		}
 		else
 			CommonFunctions.checkIfRegIdIsExpired(this, loginSettings);
-		
+
 		if(extras != null && extras.containsKey("fromRegisterActivity")){
 			Intent intent = new Intent().setClass(this, IntroductionActivity.class);
 			extras.remove("fromRegisterActivity");
@@ -217,7 +214,7 @@ public class AllGamesActivity extends ListActivity {
 			return super.onContextItemSelected(item);
 		}
 	}
-	
+
 	public void startChatActivity(String opponentId, String gameId, String oppUsername){
 		Intent intent = new Intent().setClass(this, ChatActivity.class);
 		intent.putExtra("opponentId", opponentId);
@@ -231,7 +228,7 @@ public class AllGamesActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 		registerReceiver(gcmReceiver, gcmFilter);
-		
+
 		// if session expired
 		if(Login.isSessionExpired(loginSettings) ){
 			Intent allGamesActivity = new Intent().setClass(this, LoginActivity.class);
@@ -239,12 +236,12 @@ public class AllGamesActivity extends ListActivity {
 			finish();			// can't return to this activity when signed in
 			return;
 		}
-		
+
 		startService();
 		CommonFunctions.findNewGameRequests(this, loginSettings);
 
-    AdView adView = (AdView)this.findViewById(R.id.adView);
-    adView.loadAd(new AdRequest());
+		AdView adView = (AdView)this.findViewById(R.id.adView);
+		adView.loadAd(new AdRequest());
 	}
 
 	@Override
@@ -253,7 +250,7 @@ public class AllGamesActivity extends ListActivity {
 		unregisterReceiver(gcmReceiver);
 		stopService();
 	}
-	
+
 	public void startService(){
 		serviceintent.putExtra(TimerService.URL, Extrainfo.getAllGamesUrl(extraInfoSettings));
 		serviceintent.putExtra("broadcast", TimerService.BROADCAST_ACTION_GAMES);
@@ -266,7 +263,7 @@ public class AllGamesActivity extends ListActivity {
 				unregisterReceiver(broadcastReceiver);
 			}
 			catch(IllegalArgumentException e) { Log.d("IllegalArgumentException", "broadcastReceiver not regged"); }
-		
+
 			stopService(serviceintent);
 		}
 	}
@@ -345,7 +342,7 @@ public class AllGamesActivity extends ListActivity {
 	/* Removes a game from finished game list */
 	private void removeFromList(int gameId){
 		int pos = 0;
-		
+
 		stopService();
 
 		if ((pos = findPosInListFromGameId(finishedGamesList, gameId)) >= 0){
@@ -383,7 +380,7 @@ public class AllGamesActivity extends ListActivity {
 		finishedGamesList.clear();
 		adapter.notifyDataSetChanged();
 	}
-	
+
 	public void testClickOnImage(){
 		Toast.makeText(this, "hallais", Toast.LENGTH_LONG).show();
 	}
@@ -463,10 +460,10 @@ public class AllGamesActivity extends ListActivity {
 			game.setDateCreated(obj.getString("date_created"));
 			game.setYourCards(obj.getJSONArray("yourCards"));
 			game.setOpenCards(obj.getJSONArray("openCards"));
-			
+
 			playersTurn = CommonFunctions.safeLongToInt(obj.getLong("playersTurn"));
 			game.setPlayersTurn(playersTurn);
-			
+
 			if(obj.has("image"))
 				game.setImageId(obj.getInt("image"));
 
@@ -478,7 +475,7 @@ public class AllGamesActivity extends ListActivity {
 				game.setScore(obj.getInt("score"));
 			}
 			else {
-	
+
 
 				if(obj.getInt("openCard") < 0){
 					game.setState(GameActivity.OPPONENTS_TURN);
@@ -512,7 +509,7 @@ public class AllGamesActivity extends ListActivity {
 			adapter = new SeparatedListAdapter(this);
 			setAdapter = true;
 		}
-		
+
 		adapter.removeSection(yourTurnListSection);
 		adapter.removeSection(opponentTurnListSection);
 		adapter.removeSection(finishedTurnListSection);
@@ -530,7 +527,7 @@ public class AllGamesActivity extends ListActivity {
 			setNewgameButtonVisible();
 		else
 			setNewgameButtonUnVisible();
-		
+
 		if(setAdapter)
 			setListAdapter(adapter);
 		else
@@ -546,22 +543,22 @@ public class AllGamesActivity extends ListActivity {
 
 			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
 				removeGameObj(mineTurnList, pos, yourTurnListSection);
-			
+
 			if((pos = findPosInListFromGameId(finishedGamesList, gameId)) >= 0)
 				removeGameObj(finishedGamesList, pos, finishedTurnListSection);
-			
+
 			finishedGamesList = addGameObjToList(finishedGamesList, game);
 			return;
 		}
-		
+
 		// If init add in my turn anyway
 		if(state == GameActivity.INIT){
 			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
 				removeGameObj(mineTurnList, pos, yourTurnListSection);
-			
+
 			ArrayList<Game> tmpList = new ArrayList<Game>();
 			tmpList = addGameObjToList(mineTurnList, game);
-			
+
 			mineTurnList = tmpList;
 			return;
 		}
@@ -572,7 +569,7 @@ public class AllGamesActivity extends ListActivity {
 
 			if((pos = findPosInListFromGameId(mineTurnList, gameId)) >= 0)
 				removeGameObj(mineTurnList, pos, yourTurnListSection);
-			
+
 			mineTurnList = addGameObjToList(mineTurnList, game);
 			return;
 		}
@@ -584,7 +581,7 @@ public class AllGamesActivity extends ListActivity {
 
 		if((pos = findPosInListFromGameId(opponentTurnList, gameId)) >= 0)
 			removeGameObj(opponentTurnList, pos, opponentTurnListSection);
-		
+
 		opponentTurnList = addGameObjToList(opponentTurnList, game);
 	}
 
@@ -603,20 +600,20 @@ public class AllGamesActivity extends ListActivity {
 	private void removeGameObj(ArrayList<Game> list, int pos, String section){
 		list.remove(pos);
 	}
-	
+
 	private ArrayList<Game> addGameObjToList(ArrayList<Game> list, Game game){
 		if(!list.isEmpty()){
 			for(int index=0; index < list.size(); index ++){
-      	String timeLast = list.get(index).getTimeSinceLastMove();
-      	String tmpInput = game.getTimeSinceLastMove();
-      	
+				String timeLast = list.get(index).getTimeSinceLastMove();
+				String tmpInput = game.getTimeSinceLastMove();
+
 				DateFormat myDateFormat = new SimpleDateFormat("HH:mm:ss");
-				
-      	try {
+
+				try {
 					Date tempLastDate = myDateFormat.parse(timeLast);
 					long millisecondsLast = tempLastDate.getTime();
 					tempLastDate.setTime(millisecondsLast);
-					
+
 					Date tempInputDate = myDateFormat.parse(tmpInput);
 					long millisecondsDate = tempInputDate.getTime();
 					tempInputDate.setTime(millisecondsDate);	

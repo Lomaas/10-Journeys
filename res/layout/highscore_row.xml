@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_selector"
+    android:background="@drawable/gradient_bg_highscore_1"
     android:orientation="horizontal"
     android:padding="5dip" >
 
@@ -38,56 +38,48 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/gameRowUsername"
+        android:id="@+id/playerNameRank"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/image_framelayout"
+        android:layout_marginTop="5dp"
         android:layout_toRightOf="@+id/image_framelayout"
         android:shadowColor="@color/black"
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="3"
-        android:text="This is a test"
+        android:text="1. Simen"
         android:textColor="@color/white"
-        android:textSize="14dip"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/gameStatus"
+        android:id="@+id/winsLossText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/gameRowUsername"
-        android:layout_marginTop="1dip"
+        android:layout_below="@+id/playerNameRank"
         android:layout_toRightOf="@+id/image_framelayout"
-        android:textColor="@color/white"
-        android:textSize="11dip" />
-
-    <TextView
-        android:id="@+id/gameRowLastAction"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/gameStatus"
-        android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/image_framelayout"
-        android:textColor="@color/white"
         android:shadowColor="@color/black"
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="3"
-        android:textSize="12dip"
+        android:text="WINS: 4, LOSS: 5"
+        android:textColor="@color/white"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/timeSinceUpdate"
-        android:layout_width="34dp"
+        android:id="@+id/score"
+        android:layout_width="55dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/gameRowUsername"
+        android:layout_centerVertical="true"
         android:layout_marginRight="5dip"
         android:background="@drawable/lastupdate"
         android:gravity="right"
+        android:text="1200"
         android:textColor="@color/white"
-        android:textSize="12dip"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
 </RelativeLayout>

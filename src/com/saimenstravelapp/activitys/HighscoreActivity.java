@@ -218,8 +218,10 @@ public class HighscoreActivity extends Activity {
 
 						if(posInGrid == 0)
 							textView.setText(Integer.toString(obj.getInt("score")));
-						else if(posInGrid == 1)				
+						else if(posInGrid == 1){
+
 							textView.setText(obj.getString("username"));
+						}
 						else if(posInGrid == 2)
 							textView.setText(Integer.toString(obj.getInt("averageScore")));
 						else if(posInGrid == 3)
@@ -303,14 +305,18 @@ public class HighscoreActivity extends Activity {
 							textView.setText(Integer.toString(obj.getInt("rank")));
 
 						else if(posInGrid == 1){
+							String username = obj.getString("username");
+							if(username.length() > 8)
+								username = username.substring(0, 8);
+							
 							if(obj.has("fid"))
-								textView.setText(obj.getString("username") + "*");
+								textView.setText(username + "*");
 							else if(obj.has("yourRank")){
 								textView.setTypeface(null, Typeface.BOLD);
-								textView.setText(obj.getString("username"));
+								textView.setText(username);
 							}  						
 							else
-								textView.setText(obj.getString("username"));
+								textView.setText(username);
 						}
 
 						else if(posInGrid == 2)

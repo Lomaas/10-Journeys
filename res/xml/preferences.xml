@@ -40,7 +40,7 @@
         </Preference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Other" >
-                <Preference
+        <Preference
             android:key="introductionCarusell"
             android:summary="See the introduction carusell"
             android:title="How to play" >
@@ -53,7 +53,7 @@
 
         <Preference
             android:key="fullIntro"
-            android:summary="Se the complete rules"
+            android:summary="See the complete ruleset"
             android:title="Complete ruleset" >
         </Preference>
     </PreferenceCategory>
