@@ -524,4 +524,21 @@ public class CommonFunctions {
 		AsynchronousHttpClient a = new AsynchronousHttpClient();
 		a.sendRequest(httpPost, responseListener, loginSettings);
 	}
+	
+	public static String getWinPercent(int totalGames, int totalWins){
+		if(totalGames == 0)
+			return "-";
+		else{
+			float fardin = CommonFunctions.round((float)totalWins/totalGames, 3, BigDecimal.ROUND_HALF_UP);
+			float test = 100;
+			String tmp = Float.toString(fardin*test);
+
+			if(tmp.length() > 3){
+				return tmp.substring(0, 4)+"%";
+			}
+			else{
+				return tmp+"%";
+			}
+		}
+	}
 }

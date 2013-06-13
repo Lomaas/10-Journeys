@@ -1,6 +1,5 @@
 package com.saimenstravelapp.helper;
 
-
 import java.util.ArrayList;
 import com.saimenstravelapp.*;
 import com.saimenstravelapp.activitys.domain.*;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,12 +17,12 @@ import android.widget.TextView;
  * @author Simen
  *
  */
-public class HighScoreAdapter extends BaseAdapter {
+public class FriendsStatisticAdapter extends BaseAdapter {
 	Context context = null;
 	private ArrayList<Player> players;
 
 
-	public HighScoreAdapter(Context context, ArrayList<Player> players) {
+	public FriendsStatisticAdapter(Context context, ArrayList<Player> players) {
 		this.context = context;
 		this.players = players;
 		
@@ -51,13 +49,9 @@ public class HighScoreAdapter extends BaseAdapter {
 		if (v == null) {
 			LayoutInflater vi = 
 					(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.highscore_row, null);
+			v = vi.inflate(R.layout.friends_stat_list_row, null);
 		}
 		Player player = (Player) getItem(position);
-
-		Log.d("usernameAdapter", Integer.toString(position));
-		Log.d("usernameAdapter", player.getUsername());
-
 		
 		if(player != null){
 			TextView nameAndRank = (TextView) v.findViewById(R.id.playerNameRank);
@@ -65,10 +59,8 @@ public class HighScoreAdapter extends BaseAdapter {
 			TextView score = (TextView) v.findViewById(R.id.score);
 			ImageView imageView = (ImageView)v.findViewById(R.id.avatar);
 
-
 			if (nameAndRank != null) {
-				String tmp = Integer.toString(player.getRank()) + ". " + player.getUsername();
-				nameAndRank.setText(tmp);
+				nameAndRank.setText(player.getUsername());
 			}
 
 			if(winsLossText != null) {
@@ -77,7 +69,7 @@ public class HighScoreAdapter extends BaseAdapter {
 			}
 
 			if(score != null){
-				score.setText(Integer.toString(player.getScore()));
+				score.setText("Win-%: " + CommonFunctions.getWinPercent(player.getWins() + player.getLoss(), player.getWins()));
 			}
 
 			if(imageView != null){

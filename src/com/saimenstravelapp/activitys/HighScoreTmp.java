@@ -128,6 +128,8 @@ public class HighScoreTmp extends ListActivity {
 				player.setWins(totalWins);
 				player.setRank(obj.getInt("rank"));
 				player.setUsername(obj.getString("username"));
+				player.setImageId(obj.getInt("image"));
+
 				highScoreList.add(index, player);
 			}
 			setListAdapter(new HighScoreAdapter(context, highScoreList));
